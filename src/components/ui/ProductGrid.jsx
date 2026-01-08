@@ -7,8 +7,8 @@ import Skeleton from "./Skeleton";
 const ProductGrid = ({ limit }) => {
   const { products, loading, addToCart, navigateToProduct } = useStore();
   const displayProducts = limit ? products.slice(0, limit) : products;
-  console.log("Products in Store:", products.length);
-console.log("Rendering ProductGrid with products count:", displayProducts.length);
+  // console.log("Products in Store:", products.length);
+// console.log("Rendering ProductGrid with products count:", displayProducts.length);
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

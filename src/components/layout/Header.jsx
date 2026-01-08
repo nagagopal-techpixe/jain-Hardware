@@ -10,15 +10,19 @@ import {
   ChevronRight,
   Wrench
 } from "lucide-react";
-import { categories } from "../../data/categories.jsx";
+// import { categories } from "../../data/categories.jsx";
+import { useCategories } from "../../data/Categories.jsx";
 import Badge from "../ui/Badge.jsx";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStore } from "../../context/StoreContext"; 
 import { useState } from "react";
 export default function Header() {
+  const { categories, loading: categoriesLoading } = useCategories();
+
   const { cart, view, setView, user, login, logout } = useStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+  // console.log("Categories in Header:", categories);
 const BRAND_COLOR = "bg-red-700";
 const BRAND_TEXT = "text-red-700";
 const BRAND_BORDER = "border-red-700";
@@ -122,19 +126,28 @@ const HOVER_COLOR = "hover:bg-red-800";
               </li>
             ))}
             {/* Quick Categories Dropdown (Simplified) */}
-             <li className="relative group">
-               <button className="py-3 text-sm font-medium text-gray-600 hover:text-red-700 flex items-center gap-1">
-                 Shop by Category <ChevronRight size={14} className="rotate-90"/>
-               </button>
-               <div className="absolute left-0 top-full bg-white shadow-xl rounded-lg border border-gray-100 p-4 w-[600px] hidden group-hover:grid grid-cols-3 gap-4 z-50">
-                 {categories.slice(0, 9).map(cat => (
-                   <button key={cat.id} onClick={() => setView('products')} className="text-left text-sm hover:text-red-700 text-gray-600">
-                     {cat.name}
-                   </button>
-                 ))}
-                 <button onClick={() => setView('products')} className="text-left text-sm font-bold text-red-700 col-span-3">View All Categories &rarr;</button>
-               </div>
-             </li>
+            <li className="relative group">
+  <button className="py-3 text-sm font-medium text-gray-600 hover:text-red-700 flex items-center gap-1">
+    Shop by Category <ChevronRight size={14} className="rotate-90"/>
+  </button>
+  <div className="absolute left-0 top-full bg-white shadow-xl rounded-lg border border-gray-100 p-4 w-[600px] hidden group-hover:grid grid-cols-3 gap-4 z-50">
+    {!categoriesLoading && Array.isArray(categories) ? (
+      categories.slice(0, 9).map(cat => (
+        <button 
+          key={cat.id} 
+          onClick={() => setView('products')} 
+          className="text-left text-sm hover:text-red-700 text-gray-600"
+        >
+          {cat.name}
+        </button>
+      ))
+    ) : (
+      <p className="col-span-3 text-center text-gray-400">Loading...</p>
+    )}
+    <button onClick={() => setView('products')} className="text-left text-sm font-bold text-red-700 col-span-3">View All Categories &rarr;</button>
+  </div>
+</li>
+
             <li className="ml-auto flex items-center">
               <span className={`text-xs font-bold px-2 py-1 bg-red-50 ${BRAND_TEXT} rounded uppercase tracking-wider`}>B2B Wholesale Available</span>
             </li>

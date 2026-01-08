@@ -1,8 +1,8 @@
 import { useStore } from "../context/StoreContext";
 import { Filter, Package } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Button from "../components/ui/Button";
-import { categories as categoryData } from "../data/categories";
+import { useCategories } from "../data/Categories.jsx";
 
 const ProductListView = () => {
   const {
@@ -15,17 +15,18 @@ const ProductListView = () => {
     loading
   } = useStore();
 
+  const { categories, loading: categoriesLoading } = useCategories();
   const [filterPrice, setFilterPrice] = useState(15000);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedSubCategory, setSelectedSubCategory] = useState("All");
-  const [sortOption, setSortOption] = useState("Featured");
 
-  const categoryNames = ["All", ...categoryData.map(c => c.name)];
-  const activeCategoryData = categoryData.find(c => c.name === selectedCategory);
+  // Use dynamic categories from hook
+  const categoryNames = ["All", ...(categoriesLoading ? [] : categories.map(c => c.name))];
+  const activeCategoryData = categories.find(c => c.name === selectedCategory);
 
   const subCategories = activeCategoryData
-    ? [{ name: "All", image: null }, ...activeCategoryData.subCategories]
-    : [];
+    ? ["All", ...activeCategoryData.subCategories.map(sc => sc.name)]
+    : ["All"];
 
   // ---- FILTER PRODUCTS (CURRENT PAGE ONLY) ----
   const filteredProducts = products.filter(p =>
@@ -41,43 +42,65 @@ const ProductListView = () => {
         {/* Sidebar */}
         <div className="w-full lg:w-64">
           <div className="bg-white p-6 rounded-xl border sticky top-24">
-
             <div className="flex items-center gap-2 mb-6">
               <Filter size={20} />
               <h3 className="font-bold text-lg">Filters</h3>
             </div>
 
-            {categoryNames.map(cat => (
-              <label key={cat} className="flex gap-2 mb-2">
-                <input
-                  type="radio"
-                  checked={selectedCategory === cat}
-                  onChange={() => {
-                    setSelectedCategory(cat);
-                    setSelectedSubCategory("All");
-                  }}
-                />
-                {cat}
-              </label>
-            ))}
+            {categoriesLoading ? (
+              <p>Loading categories...</p>
+            ) : (
+              <>
+                {categoryNames.map(cat => (
+                  <label key={cat} className="flex gap-2 mb-2">
+                    <input
+                      type="radio"
+                      checked={selectedCategory === cat}
+                      onChange={() => {
+                        setSelectedCategory(cat);
+                        setSelectedSubCategory("All");
+                      }}
+                    />
+                    {cat}
+                  </label>
+                ))}
 
-            <input
-              type="range"
-              min="0"
-              max="20000"
-              step="500"
-              value={filterPrice}
-              onChange={(e) => setFilterPrice(Number(e.target.value))}
-              className="w-full mt-4"
-            />
+                {/* Subcategories */}
+                {selectedCategory !== "All" && subCategories.length > 1 && (
+                  <div className="mt-4">
+                    <h4 className="font-semibold mb-2">Subcategories</h4>
+                    {subCategories.map(sub => (
+                      <label key={sub} className="flex gap-2 mb-2">
+                        <input
+                          type="radio"
+                          checked={selectedSubCategory === sub}
+                          onChange={() => setSelectedSubCategory(sub)}
+                        />
+                        {sub}
+                      </label>
+                    ))}
+                  </div>
+                )}
+
+                {/* Price Filter */}
+                <input
+                  type="range"
+                  min="0"
+                  max="20000"
+                  step="500"
+                  value={filterPrice}
+                  onChange={(e) => setFilterPrice(Number(e.target.value))}
+                  className="w-full mt-4"
+                />
+              </>
+            )}
           </div>
         </div>
 
         {/* Products */}
         <div className="flex-1">
-
           {loading ? (
-            <p className="text-center">Loading...</p>
+            <p className="text-center">Loading products...</p>
           ) : filteredProducts.length > 0 ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -88,10 +111,8 @@ const ProductListView = () => {
                       alt={product.name}
                       className="h-40 mx-auto object-contain"
                     />
-
                     <h3 className="font-bold mt-2">{product.name}</h3>
                     <p className="text-red-700 font-bold">₹{product.price}</p>
-
                     <Button onClick={() => addToCart(product)} size="sm">
                       Add
                     </Button>

@@ -1,5 +1,5 @@
 import { MapPin, Phone, Wrench } from "lucide-react";
-import { categories } from "../../data/categories"; // ✅ import at top
+import { useCategories } from "../../data/Categories.jsx"; // <-- use hook
 
 const BRAND_COLOR = "bg-red-700";
 const BRAND_TEXT = "text-red-700";
@@ -7,6 +7,8 @@ const BRAND_BORDER = "border-red-700";
 const HOVER_COLOR = "hover:bg-red-800";
 
 export default function Footer() {
+  const { categories, loading } = useCategories();
+
   return (
     <footer className="bg-gray-900 text-gray-300 pt-16 pb-8">
       <div className="container mx-auto px-4">
@@ -50,15 +52,19 @@ export default function Footer() {
           {/* Top Categories */}
           <div>
             <h3 className="text-white font-bold mb-4">Top Categories</h3>
-            <ul className="space-y-2 text-sm">
-              {categories.slice(0, 5).map(cat => (
-                <li key={cat.id}>
-                  <button className="hover:text-red-500">
-                    {cat.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
+            {loading ? (
+              <p className="text-gray-400 text-sm">Loading...</p>
+            ) : (
+              <ul className="space-y-2 text-sm">
+                {categories.slice(0, 5).map(cat => (
+                  <li key={cat.id}>
+                    <button className="hover:text-red-500">
+                      {cat.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           {/* Contact */}

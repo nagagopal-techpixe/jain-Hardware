@@ -46,6 +46,8 @@ export const StoreProvider = ({ children }) => {
         category: product.category,
         subCategory: product.subCategory,
         price: product.product_type[0]?.price || 0,
+        description: product.description, 
+         specifications: product.specifications || [],
         oldPrice:
           (product.product_type[0]?.price || 0) +
           (product.discount_regular || 0),
@@ -61,7 +63,7 @@ export const StoreProvider = ({ children }) => {
       pageCache.current[pageNumber] = mapped;
 
       setProducts(mapped);
-      console.log("Fetched products for page", mapped);
+      // console.log("Fetched products for page", mapped);
       setCount(data.count);
       setPage(pageNumber);
     } catch (err) {
@@ -86,6 +88,7 @@ export const StoreProvider = ({ children }) => {
             category: product.category,
             subCategory: product.subCategory,
             price: product.product_type[0]?.price || 0,
+            // description: product.description, 
             oldPrice:
               (product.product_type[0]?.price || 0) +
               (product.discount_regular || 0),

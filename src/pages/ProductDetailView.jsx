@@ -93,12 +93,20 @@ const renderStars = (rating) => {
   const galleryImages = product.images?.length
     ? product.images
     : [product.image];
-console.log("Gallery Images:", galleryImages);
+
+
+// console.log("Gallery Images:", galleryImages);
+// console.log("product.description:", product.description);
+// console.log("Specs:", product.specifications);
+
+
+
   // 👉 Related products
+  console.log("All Products:", products);
   const relatedProducts = products
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
-
+console.log("Related Products:", relatedProducts);
   return (
     <div className="container mx-auto px-4 py-8 animate-in zoom-in-95 duration-300">
 
@@ -233,55 +241,46 @@ console.log("Gallery Images:", galleryImages);
            ))}
         </div>
         <div className="p-8 text-gray-600 leading-relaxed min-h-[200px]">
-           {activeTab === 'desc' && (
-             <div className="max-w-4xl">
-                <p className="mb-4">This premium quality <span className="font-bold text-gray-900">{product.name}</span> is engineered for optimal performance in demanding industrial environments. Designed for both professional contractors and serious DIY enthusiasts.</p>
-                <p className="mb-4">Featuring a robust construction and ergonomic design, it ensures longevity and ease of use. Whether you are working on a large construction site or a home renovation project, this tool delivers the reliability you need.</p>
-                <h4 className="font-bold text-gray-900 mt-6 mb-2">Key Highlights:</h4>
-                <ul className="list-disc pl-5 space-y-1">
-                    <li>High-performance motor for heavy-duty applications.</li>
-                    <li>Ergonomic grip for reduced fatigue during extended use.</li>
-                    <li>Precision-engineered components for accuracy.</li>
-                    <li>Compliant with international safety standards.</li>
-                </ul>
-             </div>
-           )}
-           {activeTab === 'spec' && (
-             <div className="overflow-x-auto">
-                 <table className="w-full max-w-2xl text-sm text-left">
-                     <tbody>
-                         <tr className="border-b">
-                             <td className="py-3 font-medium text-gray-900 w-1/3">Brand</td>
-                             <td className="py-3 text-gray-600">Jain Hardware Pro</td>
-                         </tr>
-                         <tr className="border-b bg-gray-50">
-                             <td className="py-3 font-medium text-gray-900 pl-2">Model Number</td>
-                             <td className="py-3 text-gray-600">{product.sku}</td>
-                         </tr>
-                         <tr className="border-b">
-                             <td className="py-3 font-medium text-gray-900">Material</td>
-                             <td className="py-3 text-gray-600">Industrial Grade Alloy Steel / Reinforced Polymer</td>
-                         </tr>
-                         <tr className="border-b bg-gray-50">
-                             <td className="py-3 font-medium text-gray-900 pl-2">Power Source</td>
-                             <td className="py-3 text-gray-600">Corded Electric / Battery (20V)</td>
-                         </tr>
-                         <tr className="border-b">
-                             <td className="py-3 font-medium text-gray-900">Weight</td>
-                             <td className="py-3 text-gray-600">1.8 KG</td>
-                         </tr>
-                         <tr className="border-b bg-gray-50">
-                             <td className="py-3 font-medium text-gray-900 pl-2">Warranty</td>
-                             <td className="py-3 text-gray-600">1 Year Manufacturer Warranty</td>
-                         </tr>
-                         <tr>
-                             <td className="py-3 font-medium text-gray-900">Country of Origin</td>
-                             <td className="py-3 text-gray-600">India</td>
-                         </tr>
-                     </tbody>
-                 </table>
-             </div>
-           )}
+         {activeTab === 'desc' && (
+  <div className="max-w-4xl">
+    {product.description ? (
+      <p className="text-gray-700 leading-relaxed">
+        {product.description}
+      </p>
+    ) : (
+      <p className="text-gray-500">
+        No description available for this product.
+      </p>
+    )}
+  </div>
+)}
+
+         {activeTab === 'spec' && (
+  <div className="overflow-x-auto">
+    {product.specifications?.length ? (
+      <table className="w-full max-w-2xl text-sm text-left">
+        <tbody>
+          {product.specifications.map((spec, index) => (
+            <tr
+              key={index}
+              className={index % 2 === 1 ? "border-b bg-gray-50" : "border-b"}
+            >
+              <td className="py-3 font-medium text-gray-900 w-1/3 pl-2">
+                {spec.name.replace(/_/g, " ").toUpperCase()}
+              </td>
+              <td className="py-3 text-gray-800">
+                {spec.value}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    ) : (
+      <p className="text-gray-500">Specifications not available.</p>
+    )}
+  </div>
+)}
+
            {activeTab === 'revi' && (
              <div className="space-y-6 max-w-3xl">
                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
@@ -306,7 +305,7 @@ console.log("Gallery Images:", galleryImages);
                </div>
              </div>
            )}
-        </div>
+        </div>  
       </div>
 
       {/* Related Products Section */}

@@ -4,7 +4,7 @@ import { ArrowRight, ShieldCheck, Truck, Package, Phone, ChevronRight } from "lu
 
 import { useStore } from "../context/StoreContext";
 import { fetchBanners } from "../data/banners";
-import { categories } from "../data/categories";
+import { useCategories } from "../data/Categories.jsx"; // use hook instead of categories import
 
 import Button from "../components/ui/Button";
 import ProductGrid from "../components/ui/ProductGrid.jsx";
@@ -16,6 +16,8 @@ export default function HomeView() {
   const [banners, setBanners] = useState([]);
   const [bannerLoading, setBannerLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  const { categories, loading: categoriesLoading } = useCategories(); // load categories dynamically
 
   useEffect(() => {
     fetchBanners().then(data => {
@@ -36,6 +38,7 @@ export default function HomeView() {
 
   return (
     <div className="animate-in fade-in duration-500">
+
       {/* ================= HERO SECTION ================= */}
       <section className="relative h-[400px] md:h-[500px] bg-gray-900 overflow-hidden">
         <AnimatePresence mode="wait">
@@ -144,25 +147,29 @@ export default function HomeView() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {categories.map(cat => (
-              <div
-                key={cat.id}
-                onClick={() => setView("products")}
-                className="bg-white rounded-xl shadow-sm hover:shadow-xl transition cursor-pointer overflow-hidden"
-              >
-                <img
-                  src={cat.image}
-                  alt={cat.name}
-                  className="h-32 w-full object-cover"
-                />
-                <div className="p-4 text-center">
-                  <h4 className="font-bold">{cat.name}</h4>
-                  <p className="text-xs text-gray-400">
-                    {cat.subCategories?.length || 0} Sub-categories
-                  </p>
+            {!categoriesLoading ? (
+              categories.map(cat => (
+                <div
+                  key={cat.id}
+                  onClick={() => setView("products")}
+                  className="bg-white rounded-xl shadow-sm hover:shadow-xl transition cursor-pointer overflow-hidden"
+                >
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    className="h-32 w-full object-cover"
+                  />
+                  <div className="p-4 text-center">
+                    <h4 className="font-bold">{cat.name}</h4>
+                    {/* <p className="text-xs text-gray-400">
+                      {cat.subCategories?.length || 0} Sub-categories
+                    </p> */}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-center col-span-6 text-gray-400">Loading categories...</p>
+            )}
           </div>
         </div>
       </section>
