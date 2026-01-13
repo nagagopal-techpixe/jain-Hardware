@@ -21,7 +21,10 @@ export default function Header() {
 
   const { cart, view, setView, user, login, logout } = useStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+const cartCount = Array.isArray(cart)
+  ? cart.reduce((acc, item) => acc + (item.quantity || 0), 0)
+  : 0;
+
   // console.log("Categories in Header:", categories);
 const BRAND_COLOR = "bg-red-700";
 const BRAND_TEXT = "text-red-700";
@@ -32,6 +35,17 @@ const HOVER_COLOR = "hover:bg-red-800";
     { label: 'Products', value: 'products' },
     { label: 'Bulk Orders', value: 'products' }, // B2B Link
   ];
+const handleCartClick = () => {
+  const token = localStorage.getItem("access"); // adjust key if needed
+// console.log("Cart click, token:", token);
+  if (!token) {
+    // Not logged in → go to login
+    setView("login");
+  } else {
+    // Logged in → go to cart
+    setView("cart");
+  }
+};
 
   return (
     <header className="sticky top-0 z-40 bg-white shadow-md border-b border-gray-100">
@@ -93,10 +107,11 @@ const HOVER_COLOR = "hover:bg-red-800";
               )}
             </div>
 
-            <button 
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors relative text-gray-700"
-              onClick={() => setView('cart')}
-            >
+          <button 
+  className="p-2 hover:bg-gray-100 rounded-full transition-colors relative text-gray-700"
+  onClick={handleCartClick}
+>
+
               <ShoppingCart size={24} />
               {cartCount > 0 && <Badge>{cartCount}</Badge>}
             </button>

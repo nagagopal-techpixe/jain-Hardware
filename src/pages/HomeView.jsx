@@ -4,20 +4,19 @@ import { ArrowRight, ShieldCheck, Truck, Package, Phone, ChevronRight } from "lu
 
 import { useStore } from "../context/StoreContext";
 import { fetchBanners } from "../data/banners";
-import { useCategories } from "../data/Categories.jsx"; // use hook instead of categories import
+import { useCategories } from "../data/Categories.jsx";
 
 import Button from "../components/ui/Button";
 import ProductGrid from "../components/ui/ProductGrid.jsx";
 
 export default function HomeView() {
-  const { setView } = useStore();
+  const { setViewWithCategory } = useStore();
 
-  // ---------- BANNERS ----------
   const [banners, setBanners] = useState([]);
   const [bannerLoading, setBannerLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const { categories, loading: categoriesLoading } = useCategories(); // load categories dynamically
+  const { categories, loading: categoriesLoading } = useCategories();
 
   useEffect(() => {
     fetchBanners().then(data => {
@@ -28,18 +27,16 @@ export default function HomeView() {
 
   useEffect(() => {
     if (banners.length === 0) return;
-
     const timer = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % banners.length);
     }, 5000);
-
     return () => clearInterval(timer);
   }, [banners]);
 
   return (
     <div className="animate-in fade-in duration-500">
 
-      {/* ================= HERO SECTION ================= */}
+      {/* HERO */}
       <section className="relative h-[400px] md:h-[500px] bg-gray-900 overflow-hidden">
         <AnimatePresence mode="wait">
           {!bannerLoading && banners.length > 0 && (
@@ -51,13 +48,11 @@ export default function HomeView() {
               className="absolute inset-0"
             >
               <div className="absolute inset-0 bg-black/40 z-10" />
-
               <img
                 src={banners[currentSlide]?.image || ""}
                 alt="Banner"
                 className="w-full h-full object-cover"
               />
-
               <div className="absolute inset-0 z-20 container mx-auto px-4 flex flex-col justify-center text-white">
                 <motion.h2
                   initial={{ y: 20, opacity: 0 }}
@@ -67,7 +62,6 @@ export default function HomeView() {
                 >
                   {banners[currentSlide]?.title}
                 </motion.h2>
-
                 <motion.p
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
@@ -76,13 +70,12 @@ export default function HomeView() {
                 >
                   {banners[currentSlide]?.subtitle}
                 </motion.p>
-
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <Button onClick={() => setView("products")}>
+                  <Button onClick={() => setViewWithCategory("products")}>
                     {banners[currentSlide]?.cta} <ArrowRight size={18} />
                   </Button>
                 </motion.div>
@@ -91,35 +84,29 @@ export default function HomeView() {
           )}
         </AnimatePresence>
 
-        {/* -------- Slider Dots -------- */}
+        {/* Slider Dots */}
         <div className="absolute bottom-6 left-0 right-0 z-30 flex justify-center gap-2">
           {banners.map((_, idx) => (
             <button
               key={idx}
               onClick={() => setCurrentSlide(idx)}
               className={`w-3 h-3 rounded-full transition-all ${
-                currentSlide === idx
-                  ? "bg-red-600 w-8"
-                  : "bg-white/50 hover:bg-white"
+                currentSlide === idx ? "bg-red-600 w-8" : "bg-white/50 hover:bg-white"
               }`}
             />
           ))}
         </div>
       </section>
 
-      {/* ================= FEATURES ================= */}
+      {/* FEATURES */}
       <section className="bg-white py-12 border-b border-gray-100">
         <div className="container mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[
-            { icon: <ShieldCheck size={32} />, title: "Genuine Products", desc: "100% Authentic Brands" },
+          {[{ icon: <ShieldCheck size={32} />, title: "Genuine Products", desc: "100% Authentic Brands" },
             { icon: <Truck size={32} />, title: "Fast Delivery", desc: "Across India Shipping" },
             { icon: <Package size={32} />, title: "Bulk Orders", desc: "Special B2B Pricing" },
             { icon: <Phone size={32} />, title: "Expert Support", desc: "Technical Assistance" },
           ].map((feature, idx) => (
-            <div
-              key={idx}
-              className="flex gap-4 items-center p-4 border rounded-lg hover:shadow-md transition-shadow"
-            >
+            <div key={idx} className="flex gap-4 items-center p-4 border rounded-lg hover:shadow-md transition-shadow">
               <div className="text-red-700">{feature.icon}</div>
               <div>
                 <h4 className="font-bold">{feature.title}</h4>
@@ -130,7 +117,7 @@ export default function HomeView() {
         </div>
       </section>
 
-      {/* ================= CATEGORIES ================= */}
+      {/* CATEGORIES */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-end mb-10">
@@ -139,7 +126,7 @@ export default function HomeView() {
               <p className="text-gray-500">Find exactly what you need</p>
             </div>
             <button
-              onClick={() => setView("products")}
+              onClick={() => setViewWithCategory("products")}
               className="text-red-700 font-medium flex items-center hover:underline"
             >
               View All <ChevronRight size={16} />
@@ -151,19 +138,12 @@ export default function HomeView() {
               categories.map(cat => (
                 <div
                   key={cat.id}
-                  onClick={() => setView("products")}
+                  onClick={() => setViewWithCategory("products", cat.name)}
                   className="bg-white rounded-xl shadow-sm hover:shadow-xl transition cursor-pointer overflow-hidden"
                 >
-                  <img
-                    src={cat.image}
-                    alt={cat.name}
-                    className="h-32 w-full object-cover"
-                  />
+                  <img src={cat.image} alt={cat.name} className="h-32 w-full object-cover" />
                   <div className="p-4 text-center">
                     <h4 className="font-bold">{cat.name}</h4>
-                    {/* <p className="text-xs text-gray-400">
-                      {cat.subCategories?.length || 0} Sub-categories
-                    </p> */}
                   </div>
                 </div>
               ))
@@ -174,7 +154,7 @@ export default function HomeView() {
         </div>
       </section>
 
-      {/* ================= PRODUCTS ================= */}
+      {/* FEATURED PRODUCTS */}
       <section className="py-16 container mx-auto px-4">
         <h3 className="text-3xl font-bold mb-8">Featured Products</h3>
         <ProductGrid limit={4} />

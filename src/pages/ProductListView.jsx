@@ -1,39 +1,60 @@
 import { useStore } from "../context/StoreContext";
 import { Filter, Package } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "../components/ui/Button";
 import { useCategories } from "../data/Categories.jsx";
 
 const ProductListView = () => {
   const {
-    products,
-    addToCart,
-    page,
-    totalPages,
-    nextPage,
-    prevPage,
-    loading
+    products, addToCart, page, totalPages, loading, fetchProducts, navigateToProduct,
+    selectedCategory: storeCategory, selectedSubCategory: storeSubCategory
   } = useStore();
 
   const { categories, loading: categoriesLoading } = useCategories();
-  const [filterPrice, setFilterPrice] = useState(15000);
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedSubCategory, setSelectedSubCategory] = useState("All");
 
-  // Use dynamic categories from hook
-  const categoryNames = ["All", ...(categoriesLoading ? [] : categories.map(c => c.name))];
-  const activeCategoryData = categories.find(c => c.name === selectedCategory);
+  const [selectedCategory, setSelectedCategory] = useState(storeCategory || "All");
+  const [selectedSubCategory, setSelectedSubCategory] = useState(storeSubCategory || "All");
+  const [filterPrice, setFilterPrice] = useState(20000);
 
+  // Category names
+  const categoryNames = ["All", ...(categories?.map(c => c.name) || [])];
+
+  // Subcategories for selected category
+  const activeCategoryData = categories?.find(c => c.name === selectedCategory);
   const subCategories = activeCategoryData
-    ? ["All", ...activeCategoryData.subCategories.map(sc => sc.name)]
-    : ["All"];
+    ? [{ name: "All", image: null }, ...(activeCategoryData.subCategories || [])]
+    : [];
 
-  // ---- FILTER PRODUCTS (CURRENT PAGE ONLY) ----
-  const filteredProducts = products.filter(p =>
-    (selectedCategory === "All" || p.category === selectedCategory) &&
-    (selectedSubCategory === "All" || p.subCategory === selectedSubCategory) &&
-    p.price <= filterPrice
-  );
+  // Fetch products whenever category/subcategory changes
+  useEffect(() => {
+    fetchProducts({
+      category: selectedCategory === "All" ? null : selectedCategory,
+      subCategory: selectedSubCategory === "All" ? null : selectedSubCategory,
+      page: 1,
+    });
+  }, [selectedCategory, selectedSubCategory]);
+
+  const handleNext = () => {
+    if (page < totalPages) {
+      fetchProducts({
+        category: selectedCategory === "All" ? null : selectedCategory,
+        subCategory: selectedSubCategory === "All" ? null : selectedSubCategory,
+        page: page + 1,
+      });
+    }
+  };
+
+  const handlePrev = () => {
+    if (page > 1) {
+      fetchProducts({
+        category: selectedCategory === "All" ? null : selectedCategory,
+        subCategory: selectedSubCategory === "All" ? null : selectedSubCategory,
+        page: page - 1,
+      });
+    }
+  };
+
+  const filteredProducts = products.filter(p => p.price <= filterPrice);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -42,58 +63,61 @@ const ProductListView = () => {
         {/* Sidebar */}
         <div className="w-full lg:w-64">
           <div className="bg-white p-6 rounded-xl border sticky top-24">
+
             <div className="flex items-center gap-2 mb-6">
               <Filter size={20} />
               <h3 className="font-bold text-lg">Filters</h3>
             </div>
 
-            {categoriesLoading ? (
-              <p>Loading categories...</p>
+            {/* Category Filter */}
+            {!categoriesLoading ? (
+              categoryNames.map(cat => (
+                <label key={cat} className="flex gap-2 mb-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    checked={selectedCategory === cat}
+                    onChange={() => {
+                      setSelectedCategory(cat);
+                      setSelectedSubCategory("All");
+                    }}
+                  />
+                  {cat}
+                </label>
+              ))
             ) : (
-              <>
-                {categoryNames.map(cat => (
-                  <label key={cat} className="flex gap-2 mb-2">
+              <p className="text-gray-400">Loading categories...</p>
+            )}
+
+            {/* Subcategory Filter */}
+            {subCategories.length > 0 && (
+              <div className="mt-4">
+                <h4 className="font-semibold mb-2">Subcategories</h4>
+                {subCategories.map(sub => (
+                  <label key={sub.name} className="flex gap-2 mb-2 cursor-pointer">
                     <input
                       type="radio"
-                      checked={selectedCategory === cat}
-                      onChange={() => {
-                        setSelectedCategory(cat);
-                        setSelectedSubCategory("All");
-                      }}
+                      checked={selectedSubCategory === sub.name}
+                      onChange={() => setSelectedSubCategory(sub.name)}
                     />
-                    {cat}
+                    {sub.name}
                   </label>
                 ))}
-
-                {/* Subcategories */}
-                {selectedCategory !== "All" && subCategories.length > 1 && (
-                  <div className="mt-4">
-                    <h4 className="font-semibold mb-2">Subcategories</h4>
-                    {subCategories.map(sub => (
-                      <label key={sub} className="flex gap-2 mb-2">
-                        <input
-                          type="radio"
-                          checked={selectedSubCategory === sub}
-                          onChange={() => setSelectedSubCategory(sub)}
-                        />
-                        {sub}
-                      </label>
-                    ))}
-                  </div>
-                )}
-
-                {/* Price Filter */}
-                <input
-                  type="range"
-                  min="0"
-                  max="20000"
-                  step="500"
-                  value={filterPrice}
-                  onChange={(e) => setFilterPrice(Number(e.target.value))}
-                  className="w-full mt-4"
-                />
-              </>
+              </div>
             )}
+
+            {/* Price Filter */}
+            <div className="mt-4">
+              <h4 className="font-semibold mb-2">Max Price: ₹{filterPrice}</h4>
+              <input
+                type="range"
+                min="0"
+                max="20000"
+                step="100"
+                value={filterPrice}
+                onChange={(e) => setFilterPrice(Number(e.target.value))}
+                className="w-full"
+              />
+            </div>
           </div>
         </div>
 
@@ -105,7 +129,11 @@ const ProductListView = () => {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProducts.map(product => (
-                  <div key={product.id} className="border rounded-xl p-4">
+                  <div
+                    key={product.id}
+                    className="border rounded-xl p-4 hover:shadow-lg transition cursor-pointer"
+                    onClick={() => navigateToProduct(product)}
+                  >
                     <img
                       src={product.image}
                       alt={product.name}
@@ -113,32 +141,23 @@ const ProductListView = () => {
                     />
                     <h3 className="font-bold mt-2">{product.name}</h3>
                     <p className="text-red-700 font-bold">₹{product.price}</p>
-                    <Button onClick={() => addToCart(product)} size="sm">
+                    <Button
+                      onClick={(e) => { e.stopPropagation(); addToCart(product); }}
+                      size="sm"
+                    >
                       Add
                     </Button>
                   </div>
                 ))}
               </div>
 
-              {/* SERVER PAGINATION */}
+              {/* Pagination */}
               <div className="flex justify-center items-center gap-4 mt-10">
-                <button
-                  onClick={prevPage}
-                  disabled={page === 1}
-                  className="px-4 py-2 border rounded"
-                >
+                <button onClick={handlePrev} disabled={page === 1} className="px-4 py-2 border rounded disabled:opacity-50">
                   Prev
                 </button>
-
-                <span>
-                  Page {page} of {totalPages}
-                </span>
-
-                <button
-                  onClick={nextPage}
-                  disabled={page === totalPages}
-                  className="px-4 py-2 border rounded"
-                >
+                <span>Page {page} of {totalPages}</span>
+                <button onClick={handleNext} disabled={page === totalPages} className="px-4 py-2 border rounded disabled:opacity-50">
                   Next
                 </button>
               </div>

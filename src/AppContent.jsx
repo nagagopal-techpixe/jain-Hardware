@@ -9,6 +9,9 @@ import ProductDetailView from './pages/ProductDetailView';
 import DashboardView from './pages/DashboardView';
 import CheckoutView from './pages/CheckoutView';
 import ToastContainer from './components/ui/ToastContainer';
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+
 
 
 const AppContent = () => {
@@ -16,6 +19,9 @@ const AppContent = () => {
 
   const renderView = () => {
     switch(view) {
+      case "login": return <Login />;
+case "register": return <Register />;
+
       case 'home': return <HomeView />;
       case 'products': return <ProductListView />;
       case 'product-detail': return <ProductDetailView />;
