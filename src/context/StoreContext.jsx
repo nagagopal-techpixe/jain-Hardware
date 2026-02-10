@@ -3,6 +3,7 @@ import { getCart, addToCart, updateCartItem, deleteCartItem } from "../data/APIF
 import { placeOrder, fetchOrders } from "../data/APIFunctionsforCart.js";
 // const StoreContext = createContext();
 const StoreContext = createContext();
+import { fetchUser } from "../data/userService";
 
 
 export const StoreProvider = ({ children }) => {
@@ -310,16 +311,32 @@ useEffect(() => {
 }, [user.isLoggedIn]);
 
   // ---- USER ----
-  const login = () => {
-    setUser({ name: "Rahul Jain", email: "rahul@jainhardware.com", isLoggedIn: true });
-    addToast("Welcome back, Rahul!");
-  };
+ 
 
-  const logout = () => {
+// ---- USER ----
+
+// Dynamic login using fetchUser
+const login = async () => {
+  const res = await fetchUser(); // call backend to get current user
+  if (res.success) {
+    setUser({ ...res.user, isLoggedIn: true });
+    addToast(`Welcome back, ${res.user.name}!`);
+    fetchCart(); // optional: fetch cart after login
+  } else {
     setUser({ name: "Guest", isLoggedIn: false });
-    setView("home");
-    addToast("Logged out successfully");
-  };
+    addToast("Please login", "error");
+  }
+};
+
+// Logout
+const logout = () => {
+  localStorage.removeItem("access");
+  localStorage.removeItem("refresh");
+  setUser({ name: "Guest", isLoggedIn: false });
+  setView("home");
+  addToast("Logged out successfully");
+};
+
 
   const navigateToProduct = (product) => {
     setSelectedProduct(product);

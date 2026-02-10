@@ -61,9 +61,10 @@ const CartView = () => {
                       <button onClick={() => updateQuantity(item.id, 1)}>+</button>
                     </div>
 
-                    <span className="font-bold">
-                      ₹{item.total_price.toFixed(2)}
-                    </span>
+                   <span className="font-bold text-lg text-gray-900 ml-1">
+  KWD {item.total_price.toFixed(2)}
+</span>
+
                   </div>
                 </div>
               </div>
@@ -79,15 +80,15 @@ const CartView = () => {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>₹{subtotal.toFixed(2)}</span>
+                <span>KWD {subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>GST (18%)</span>
-                <span>₹{gst.toFixed(2)}</span>
+                <span>KWD {gst.toFixed(2)}</span>
               </div>
               <div className="flex justify-between font-bold text-lg border-t pt-3">
                 <span>Total</span>
-                <span>₹{total.toFixed(2)}</span>
+                <span>KWD {total.toFixed(2)}</span>
               </div>
             </div>
 

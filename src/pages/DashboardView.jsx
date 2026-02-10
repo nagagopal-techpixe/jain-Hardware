@@ -184,29 +184,44 @@ const DashboardView = () => {
           ) : orders.length === 0 ? (
             <p>No orders found.</p>
           ) : (
-            <div className="space-y-4">
-              {orders.map(order => (
-                <div key={order.order_id} className="bg-white border border-gray-200 rounded-lg p-6 flex flex-col md:flex-row justify-between items-center gap-4 hover:shadow-md transition-shadow">
-                  <div>
-                    <h4 className="font-bold text-gray-900">{order.order_id}</h4>
-                    <p className="text-xs text-gray-500">Placed on {new Date(order.created_at).toLocaleDateString()}</p>
-                  </div>
-                  <div className="flex-1 md:text-center">
-                    <span className="block text-sm text-gray-500">Total Amount</span>
-                    <span className="font-bold text-gray-900">₹{order.total_price}</span>
-                  </div>
-                  <div>
-                    {/* You can map status to colors dynamically */}
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      order.status === "Delivered" ? "text-green-600 bg-green-50" :
-                      order.status === "Processing" ? "text-blue-600 bg-blue-50" :
-                      "text-gray-600 bg-gray-50"
-                    }`}>{order.status}</span>
-                  </div>
-                  <Button variant="outline" className="text-xs py-2 h-auto">View Details</Button>
-                </div>
-              ))}
-            </div>
+       <div className="space-y-4">
+  {orders.map(order => (
+    <div key={order.order_id} className="bg-white border border-gray-200 rounded-lg p-6 flex flex-col md:flex-row justify-between items-center gap-4 hover:shadow-md transition-shadow">
+      
+      {/* Product Image instead of Order ID */}
+      <div>
+        {order.products[0]?.product.images[0]?.image ? (
+          <img
+            src={order.products[0].product.images[0].image}
+            alt={order.products[0].product.images[0]?.alt_text || order.products[0].product.name}
+            className="w-24 h-24 object-cover rounded-md"
+          />
+        ) : (
+          <div className="w-24 h-24 bg-gray-100 flex items-center justify-center rounded-md text-gray-400 text-xs">
+            No Image
+          </div>
+        )}
+      </div>
+
+      <div className="flex-1 md:text-center">
+        <span className="block text-sm text-gray-500">Total Amount</span>
+        <span className="font-bold text-gray-900">₹{order.total_price}</span>
+      </div>
+
+      <div>
+        {/* Status badge */}
+        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+          order.status === "Delivered" ? "text-green-600 bg-green-50" :
+          order.status === "Processing" ? "text-blue-600 bg-blue-50" :
+          "text-gray-600 bg-gray-50"
+        }`}>{order.status}</span>
+      </div>
+
+      <Button variant="outline" className="text-xs py-2 h-auto">View Details</Button>
+    </div>
+  ))}
+</div>
+
           )}
         </div>
       </div>

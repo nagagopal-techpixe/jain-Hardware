@@ -154,34 +154,36 @@ console.log(e.target.payment.value);
               <h3 className="font-bold text-gray-900 mb-4">Order Review</h3>
              <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
   {cart.map(item => (
-    <div key={item.id} className="flex justify-between text-sm">
-      <span className="text-gray-600">
-        {item.quantity} x ₹{item.product_type?.price || 0}
-      </span>
-      <span className="font-medium">
-        ₹{(item.product_type?.price || 0) * item.quantity}
-      </span>
-    </div>
+   <div key={item.id} className="flex justify-between text-sm items-center">
+  {/* Quantity × Price */}
+  <span className="text-gray-600">
+    {item.quantity} x <span className="font-medium ml-1">KWD {item.product_type?.price.toFixed(2) || 0}</span>
+  </span>
+
+  {/* Total Price for this item */}
+  <span className="font-bold text-gray-900 text-base ml-2">
+    KWD {(item.product_type?.price || 0 * item.quantity).toFixed(2)}
+  </span>
+</div>
+
   ))}
 </div>
 
 <div className="border-t border-gray-200 pt-4 flex justify-between font-bold text-lg">
   <span>Total Pay</span>
-  <span>
-    ₹{
-      Math.round(
-        cart.reduce(
-          (total, item) =>
-            total +
-            (Number(item.product_type?.price) || 0) * (Number(item.quantity) || 0),
-          0
-        ) * 1.18 // Add GST or tax
-      )
-    }
-  </span>
+ <span className="font-bold text-red-700 text-lg ml-1">
+  KWD{" "}
+  {Math.round(
+    cart.reduce(
+      (total, item) =>
+        total +
+        (Number(item.product_type?.price) || 0) *
+          (Number(item.quantity) || 0),
+      0
+    ) * 1.18 // Add GST or tax
+  )}
+</span>
 </div>
-
-              
            </div>
         </div>
       </div>

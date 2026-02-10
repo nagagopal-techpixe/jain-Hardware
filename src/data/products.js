@@ -6,7 +6,7 @@ export const fetchProducts = async () => {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/all-products/");
     const data = await response.json();
- console.log("Raw API Response Count:", data.length);
+//  console.log("Raw API Response Count:", data.length);
     // Map backend format → frontend format
     products = data.map(product => ({
       id: product.id,
