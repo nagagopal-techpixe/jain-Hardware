@@ -98,67 +98,107 @@ export default function HomeView() {
         </div>
       </section>
 
-      {/* FEATURES */}
-      <section className="bg-white py-12 border-b border-gray-100">
-        <div className="container mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[{ icon: <ShieldCheck size={32} />, title: "Genuine Products", desc: "100% Authentic Brands" },
-            { icon: <Truck size={32} />, title: "Fast Delivery", desc: "Across India Shipping" },
-            { icon: <Package size={32} />, title: "Bulk Orders", desc: "Special B2B Pricing" },
-            { icon: <Phone size={32} />, title: "Expert Support", desc: "Technical Assistance" },
-          ].map((feature, idx) => (
-            <div key={idx} className="flex gap-4 items-center p-4 border rounded-lg hover:shadow-md transition-shadow">
-              <div className="text-red-700">{feature.icon}</div>
-              <div>
-                <h4 className="font-bold">{feature.title}</h4>
-                <p className="text-xs text-gray-500">{feature.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* CATEGORIES */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-end mb-10">
-            <div>
-              <h3 className="text-3xl font-bold mb-2">Shop by Category</h3>
-              <p className="text-gray-500">Find exactly what you need</p>
-            </div>
-            <button
-              onClick={() => setViewWithCategory("products")}
-              className="text-red-700 font-medium flex items-center hover:underline"
-            >
-              View All <ChevronRight size={16} />
-            </button>
+       <div className="relative flex items-center mb-10">
+
+ <div className="mx-auto text-center relative mb-4">
+
+  <h3 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
+    Shop by Category
+  </h3>
+
+  {/* Underline */}
+  <span className="block w-24 h-1 mx-auto mb-3 rounded-full bg-gradient-to-r from-red-600 to-orange-400"></span>
+
+  <p className="text-gray-500 text-sm md:text-base tracking-wide">
+    Find exactly what you need
+  </p>
+
+</div>
+
+
+         <button
+  onClick={() => setViewWithCategory("products")}
+  className="absolute right-0 text-red-700 font-medium flex items-center hover:underline"
+>
+  View All <ChevronRight size={16} />
+</button>
+
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            {!categoriesLoading ? (
-              categories.map(cat => (
-                <div
-                  key={cat.id}
-                  onClick={() => setViewWithCategory("products", cat.name)}
-                  className="bg-white rounded-xl shadow-sm hover:shadow-xl transition cursor-pointer overflow-hidden"
-                >
-                  <img src={cat.image} alt={cat.name} className="h-32 w-full object-cover" />
-                  <div className="p-4 text-center">
-                    <h4 className="font-bold">{cat.name}</h4>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-center col-span-6 text-gray-400">Loading categories...</p>
-            )}
+        <div className="px-6 md:px-10 lg:px-14">
+
+  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+    {/* Changed lg:grid-cols-6 → lg:grid-cols-5 for bigger cards */}
+
+    {!categoriesLoading ? (
+      categories.map(cat => (
+        <div
+          key={cat.id}
+          onClick={() => setViewWithCategory("products", cat.name)}
+          className="bg-white 
+                     border border-gray-200 
+                     rounded-xl 
+                     shadow-sm 
+                     hover:shadow-md 
+                     transition 
+                     cursor-pointer 
+                     overflow-hidden"
+        >
+          <img
+            src={cat.image}
+            alt={cat.name}
+            className="h-36 w-full object-contain p-4"
+          />
+          {/* Increased height + padding */}
+
+          <div className="pb-5 text-center">
+<h4 className="font-everest text-base font-normal text-gray-800">
+  {cat.name}
+</h4>
           </div>
+        </div>
+      ))
+    ) : (
+      <p className="text-center col-span-5 text-gray-400">
+        Loading categories...
+      </p>
+    )}
+
+  </div>
+
+</div>
+
         </div>
       </section>
 
-      {/* FEATURED PRODUCTS */}
-      <section className="py-16 container mx-auto px-4">
-        <h3 className="text-3xl font-bold mb-8">Featured Products</h3>
-        <ProductGrid limit={4} />
-      </section>
+
+     {/* FEATURED PRODUCTS */}
+<section className="py-20 bg-white">
+
+  <div className="container mx-auto px-4">
+
+    {/* Section Title */}
+    <div className="mx-auto text-center mb-14">
+
+      <h3 className="text-3xl md:text-4xl font-bold text-black mb-3">
+        Featured Products
+      </h3>
+
+      {/* Underline (Like Shop by Category) */}
+      <span className="block w-32 h-[4px] mx-auto bg-gradient-to-r from-red-600 to-orange-400"></span>
+
+    </div>
+
+    {/* Keep Your Existing Card Style */}
+    <ProductGrid limit={4} />
+
+  </div>
+
+</section>
+
     </div>
   );
 }

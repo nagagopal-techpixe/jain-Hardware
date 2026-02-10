@@ -4,3 +4,13 @@ export default {
   theme: { extend: {} },
   plugins: [],
 }
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      fontFamily: {
+        everest: ['Montserrat', 'sans-serif'],
+      },
+    },
+  },
+}

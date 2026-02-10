@@ -50,125 +50,244 @@ const handleCartClick = () => {
   return (
     <header className="sticky top-0 z-40 bg-white shadow-md border-b border-gray-100">
       {/* Top Bar */}
-      <div className="bg-gray-900 text-gray-300 text-xs py-2 hidden md:block">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="flex gap-4">
-            <span className="flex items-center gap-1"><Phone size={12} /> +91 98765 43210</span>
-            <span className="flex items-center gap-1"><MapPin size={12} /> Industrial Estate, Hyderabad</span>
-          </div>
-          <div className="flex gap-4">
-            <span className="cursor-pointer hover:text-white">Track Order</span>
-            <span className="cursor-pointer hover:text-white">Support</span>
-          </div>
-        </div>
-      </div>
+      <div className="bg-gray-900 text-gray-300 hidden md:block">
 
-      {/* Main Header */}
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between gap-4">
-          {/* Logo */}
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setView('home')}>
-            <div className={`w-10 h-10 ${BRAND_COLOR} rounded-lg flex items-center justify-center text-white`}>
-              <Wrench size={24} strokeWidth={2.5} />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900 leading-none">JAIN</h1>
-              <p className="text-xs text-gray-500 font-medium tracking-widest">HARDWARE</p>
-            </div>
-          </div>
+  <div className="w-full px-2 py-3 flex justify-between items-center">
 
-          {/* Search Bar - Desktop */}
-          <div className="hidden md:flex flex-1 max-w-xl mx-8 relative">
-            <input 
-              type="text" 
-              placeholder="Search tools, electrical, plumbing..." 
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
-            />
-            <Search className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-          </div>
+    <div className="flex gap-6 text-base font-medium ml-2">
+      <span className="flex items-center gap-2">
+        <Phone size={16} />
+        +91 98765 43210
+      </span>
 
-          {/* Icons */}
-          <div className="flex items-center gap-2 md:gap-4">
-            <div className="relative group">
-              <button 
-                onClick={() => user.isLoggedIn ? setView('dashboard') : login()}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-700"
-              >
-                <User size={24} />
-              </button>
-              {user.isLoggedIn && (
-                 <div className="absolute right-0 mt-2 w-48 bg-white shadow-xl rounded-md py-2 hidden group-hover:block border border-gray-100">
-                    <div className="px-4 py-2 border-b border-gray-100 mb-1">
-                      <p className="text-sm font-semibold">{user.name}</p>
-                    </div>
-                    <button onClick={() => setView('dashboard')} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50">Dashboard</button>
-                    <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-50">Logout</button>
-                 </div>
-              )}
-            </div>
+      <span className="flex items-center gap-2">
+        <MapPin size={16} />
+        Industrial Estate, Hyderabad
+      </span>
+    </div>
 
-          <button 
-  className="p-2 hover:bg-gray-100 rounded-full transition-colors relative text-gray-700"
-  onClick={handleCartClick}
->
+    <div className="flex gap-6 text-base font-medium mr-2">
+      <span className="cursor-pointer hover:text-white">
+        Track Order
+      </span>
 
-              <ShoppingCart size={24} />
-              {cartCount > 0 && <Badge>{cartCount}</Badge>}
-            </button>
+      <span className="cursor-pointer hover:text-white">
+        Support
+      </span>
+    </div>
 
-            <button 
-              className="md:hidden p-2 hover:bg-gray-100 rounded-full"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation - Desktop */}
-      <nav className="hidden md:block border-t border-gray-100">
-        <div className="container mx-auto px-4">
-          <ul className="flex gap-8">
-            {navLinks.map((link, idx) => (
-              <li key={idx}>
-                <button 
-                  onClick={() => setView(link.value)}
-                  className={`py-3 text-sm font-medium border-b-2 border-transparent hover:${BRAND_TEXT} hover:border-red-600 transition-all ${view === link.value ? `border-red-600 ${BRAND_TEXT}` : 'text-gray-600'}`}
-                >
-                  {link.label}
-                </button>
-              </li>
-            ))}
-            {/* Quick Categories Dropdown (Simplified) */}
-            <li className="relative group">
-  <button className="py-3 text-sm font-medium text-gray-600 hover:text-red-700 flex items-center gap-1">
-    Shop by Category <ChevronRight size={14} className="rotate-90"/>
-  </button>
-  <div className="absolute left-0 top-full bg-white shadow-xl rounded-lg border border-gray-100 p-4 w-[600px] hidden group-hover:grid grid-cols-3 gap-4 z-50">
-    {!categoriesLoading && Array.isArray(categories) ? (
-      categories.slice(0, 9).map(cat => (
-        <button 
-          key={cat.id} 
-          onClick={() => setView('products')} 
-          className="text-left text-sm hover:text-red-700 text-gray-600"
-        >
-          {cat.name}
-        </button>
-      ))
-    ) : (
-      <p className="col-span-3 text-center text-gray-400">Loading...</p>
-    )}
-    <button onClick={() => setView('products')} className="text-left text-sm font-bold text-red-700 col-span-3">View All Categories &rarr;</button>
   </div>
-</li>
 
-            <li className="ml-auto flex items-center">
-              <span className={`text-xs font-bold px-2 py-1 bg-red-50 ${BRAND_TEXT} rounded uppercase tracking-wider`}>B2B Wholesale Available</span>
-            </li>
-          </ul>
+</div>
+
+
+    {/* Main Header */}
+<div className="bg-white border-b border-gray-200">
+  <div className="w-full px-2">
+
+    <div className="flex items-center h-20">
+
+      {/* Logo */}
+      <div
+        onClick={() => setView("home")}
+        className="flex items-center gap-2 cursor-pointer min-w-[200px]"
+      >
+        <div
+          className={`w-9 h-9 ${BRAND_COLOR} rounded-md flex items-center justify-center text-white`}
+        >
+          <Wrench size={22} />
         </div>
-      </nav>
+
+        <div>
+          <h1 className="text-lg font-bold leading-none">JAIN</h1>
+          <p className="text-[10px] text-gray-500 tracking-widest">
+            HARDWARE
+          </p>
+        </div>
+      </div>
+
+
+      {/* Menu */}
+      <ul className="flex items-center gap-10 ml-10">
+
+        {/* Home */}
+        <li>
+          <button
+            onClick={() => setView("home")}
+            className={`text-sm font-semibold ${
+              view === "home"
+                ? "text-red-700"
+                : "text-gray-700 hover:text-red-700"
+            }`}
+          >
+            Home
+          </button>
+        </li>
+
+        {/* Products */}
+        <li>
+          <button
+            onClick={() => setView("products")}
+            className={`text-sm font-semibold ${
+              view === "products"
+                ? "text-red-700"
+                : "text-gray-700 hover:text-red-700"
+            }`}
+          >
+            Products
+          </button>
+        </li>
+
+
+        {/* Shop By Category */}
+        <li className="relative group">
+
+          <button
+            className="
+              text-sm font-semibold
+              text-gray-700
+              hover:text-red-700
+              flex items-center gap-1
+            "
+          >
+            Shop by Category
+
+            <ChevronRight
+              size={14}
+              className="
+                -rotate-90
+                transition-transform
+                duration-200
+                group-hover:rotate-90
+              "
+            />
+          </button>
+
+
+          {/* Dropdown */}
+          <div
+            className="
+              absolute left-0 top-full
+              bg-white
+              shadow-xl
+              rounded-md
+              border
+              border-gray-100
+              p-4
+              w-[600px]
+              hidden
+              group-hover:grid
+              grid-cols-3
+              gap-4
+              z-50
+            "
+          >
+            {!categoriesLoading && categories?.length ? (
+              categories.slice(0, 9).map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => setView("products")}
+                  className="text-left text-sm text-gray-600 hover:text-red-700"
+                >
+                  {cat.name}
+                </button>
+              ))
+            ) : (
+              <p className="col-span-3 text-center text-gray-400">
+                Loading...
+              </p>
+            )}
+
+            <button
+              onClick={() => setView("products")}
+              className="col-span-3 text-left text-sm font-semibold text-red-700"
+            >
+              View All →
+            </button>
+          </div>
+
+        </li>
+
+
+        {/* Contact */}
+        <li>
+          <button
+            onClick={() => setView("contact")}
+            className="text-sm font-semibold text-gray-700 hover:text-red-700"
+          >
+            Contact
+          </button>
+        </li>
+
+      </ul>
+
+
+      {/* Right Section */}
+      <div className="ml-auto flex items-center gap-4">
+
+        {/* Search */}
+        <div className="relative w-[320px]">
+
+          <input
+            type="text"
+            placeholder="Search / ابحث"
+            className="
+              w-full
+              h-10
+              pl-4
+              pr-20
+              bg-gray-100
+              rounded-md
+              text-sm
+              focus:outline-none
+            "
+          />
+
+          <button
+            className="
+              absolute right-0 top-0
+              h-full px-5
+              bg-blue-900
+              text-white
+              text-sm font-medium
+              rounded-r-md
+              hover:bg-blue-800
+            "
+          >
+            SEARCH
+          </button>
+
+        </div>
+
+
+        {/* User */}
+        <button
+          onClick={() =>
+            user.isLoggedIn ? setView("dashboard") : login()
+          }
+          className="p-2 hover:bg-gray-100 rounded-full"
+        >
+          <User size={22} />
+        </button>
+
+
+        {/* Cart */}
+        <button
+          onClick={handleCartClick}
+          className="relative p-2 hover:bg-gray-100 rounded-full"
+        >
+          <ShoppingCart size={22} />
+          {cartCount > 0 && <Badge>{cartCount}</Badge>}
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
 
       {/* Mobile Menu */}
       <AnimatePresence>

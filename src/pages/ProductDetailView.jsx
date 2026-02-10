@@ -86,11 +86,7 @@ const ProductDetailView = () => {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 leading-tight">{product.name}</h1>
           <div className="flex items-center gap-4 text-sm mb-4 flex-wrap">
             <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-medium">SKU: {product.sku}</span>
-            <div className="flex items-center gap-1 text-yellow-500 bg-yellow-50 px-3 py-1 rounded-full">
-              <Star size={14} fill="currentColor" />
-              <span className="font-bold text-gray-900">{product.rating}</span>
-              <span className="text-gray-600">({product.reviews} Reviews)</span>
-            </div>
+       
             {product.stock ? 
               <span className="text-green-700 bg-green-50 px-3 py-1 rounded-full font-bold flex items-center gap-1"><CheckCircle size={14}/> In Stock</span> : 
               <span className="text-red-700 bg-red-50 px-3 py-1 rounded-full font-bold">Out of Stock</span>
@@ -99,15 +95,24 @@ const ProductDetailView = () => {
 
           <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 mb-8">
             <div className="flex items-end gap-3 mb-2">
-                <span className="text-4xl font-bold text-red-700">₹{product.price}</span>
+              <span className="text-2xl font-bold text-red-700">
+  KWD {Number(product.price).toFixed(1)}
+</span>
+
                 {product.oldPrice && <>
-                    <span className="text-xl text-gray-400 line-through mb-1">₹{product.oldPrice}</span>
+                 <span className="text-1lx text-gray-400 line-through mb-1">
+  KWD {Number(product.oldPrice).toFixed(3)}
+</span>
+
                     <span className="text-green-600 font-bold mb-1 text-sm bg-green-100 px-2 py-0.5 rounded">
                        {Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}% OFF
                     </span>
                 </>}
             </div>
-            <p className="text-xs text-gray-500">+18% GST applicable. Bulk pricing for orders &gt; 50 units.</p>
+           <p className="text-xs text-gray-500">
+  Prices are inclusive of applicable taxes. Bulk pricing available for large orders.
+</p>
+
           </div>
 
           <div className="flex items-center gap-4 mb-8">
@@ -121,29 +126,14 @@ const ProductDetailView = () => {
             <button className="h-12 w-12 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 text-gray-600 transition-colors"><Share2 size={20}/></button>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 text-sm mb-16">
-             <div className="flex items-start gap-3 p-4 bg-white border border-gray-100 rounded-xl shadow-sm">
-                <Truck className="text-red-600 mt-0.5" size={20}/>
-                <div>
-                    <span className="block font-bold text-gray-900">Fast Delivery</span>
-                    <span className="text-gray-500 text-xs">Dispatch within 24hrs</span>
-                </div>
-             </div>
-             <div className="flex items-start gap-3 p-4 bg-white border border-gray-100 rounded-xl shadow-sm">
-                <ShieldCheck className="text-red-600 mt-0.5" size={20}/>
-                <div>
-                    <span className="block font-bold text-gray-900">Warranty</span>
-                    <span className="text-gray-500 text-xs">1 Year Brand Warranty</span>
-                </div>
-             </div>
-          </div>
+         
         </div>
       </div>
 
       {/* Tabs */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-16">
         <div className="flex border-b border-gray-200 bg-gray-50/50">
-           {['Description', 'Specifications', 'Reviews'].map(tab => {
+           {['Description', 'Specifications'].map(tab => {
              const key = tab.toLowerCase().slice(0,4);
              return (
                <button key={tab} className={`px-8 py-4 font-semibold text-sm focus:outline-none transition-colors ${activeTab === key ? 'text-red-700 border-b-2 border-red-700 bg-white' : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'}`}
@@ -169,51 +159,138 @@ const ProductDetailView = () => {
               </table>
             ) : <p className="text-gray-500">Specifications not available.</p>
           )}
-          {activeTab === 'revi' && (
-            <div className="space-y-6 max-w-3xl">
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
-                <div className="text-center">
-                  <span className="block text-4xl font-bold text-gray-900">{product.rating}</span>
-                  <div className="flex text-yellow-400 justify-center text-sm my-1">{renderStars(product.rating)}</div>
-                  <span className="text-xs text-gray-500">{product.reviews} Reviews</span>
-                </div>
-                <div className="flex-1 border-l pl-4 ml-4">
-                  <p className="font-bold text-gray-900 mb-1">{getRatingLabel(product.rating)}</p>
-                  <p className="text-sm">"I bought this for my workshop and it has exceeded expectations. Very durable and powerful."</p>
-                  <p className="text-xs text-gray-400 mt-2">- Verified Buyer, Hyderabad</p>
-                </div>
-              </div>
-            </div>
-          )}
+        
         </div>
       </div>
 
       {/* Related Products */}
-      {relatedProducts.length > 0 && (
-        <div className="border-t border-gray-100 pt-12">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-2xl font-bold text-gray-900">Related Products</h3>
-            <button onClick={() => setView('products')} className="text-red-700 font-medium hover:underline text-sm">View More</button>
+{relatedProducts.length > 0 && (
+
+  <section className="py-16 bg-white">
+
+    <div className="max-w-7xl mx-auto px-4">
+
+      {/* Section Header */}
+      <div className="text-center mb-12">
+
+        <h3 className="text-3xl font-bold text-gray-900 mb-3">
+          Related Products
+        </h3>
+
+        {/* Sharp Line */}
+        <span className="block w-36 h-[3px] bg-red-600 mx-auto mb-3"></span>
+
+        <button
+          onClick={() => setView("products")}
+          className="text-red-700 font-medium text-sm hover:underline"
+        >
+          View More →
+        </button>
+
+      </div>
+
+
+      {/* Products Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+
+        {relatedProducts.map((p) => (
+
+          <div
+            key={p.id}
+            onClick={() => navigateToProduct(p)}
+            className="
+              bg-white
+              border border-gray-200
+              rounded-2xl
+              p-5
+              cursor-pointer
+              group
+              hover:shadow-xl
+              transition-all
+              duration-300
+              flex
+              flex-col
+            "
+          >
+
+            {/* Image */}
+            <div className="h-56 mb-4 flex items-center justify-center bg-gray-50 rounded-xl overflow-hidden">
+
+              <img
+                src={p.image}
+                alt={p.name}
+                className="
+                  max-h-full
+                  max-w-full
+                  object-contain
+                  p-3
+                  group-hover:scale-110
+                  transition-transform
+                  duration-500
+                "
+              />
+
+            </div>
+
+
+            {/* Category */}
+            <p className="text-sm text-gray-500 mb-1">
+              {p.subCategory || p.category}
+            </p>
+
+
+            {/* Title */}
+            <h4 className="
+              font-semibold
+              text-base
+              text-gray-900
+              line-clamp-2
+              mb-3
+              group-hover:text-red-700
+              transition-colors
+            ">
+              {p.name}
+            </h4>
+
+
+            {/* Price + Cart */}
+            <div className="mt-auto flex items-center justify-between">
+
+     <span className="text-lg font-bold text-gray-900">
+  KWD {Number(p.price).toFixed(1)}
+</span>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addToCart(p);
+                }}
+                className="
+                  p-3
+                  bg-red-50
+                  text-red-700
+                  rounded-xl
+                  hover:bg-red-700
+                  hover:text-white
+                  transition-colors
+                "
+              >
+                <ShoppingCart size={18} />
+              </button>
+
+            </div>
+
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map(p => (
-              <div key={p.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all cursor-pointer bg-white group" onClick={() => navigateToProduct(p)}>
-                <div className="h-48 mb-4 flex items-center justify-center bg-gray-50 rounded-lg overflow-hidden">
-                  <img src={p.image} className="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-500"/>
-                </div>
-                <p className="text-xs text-gray-500 mb-1">{p.subCategory || p.category}</p>
-                <h4 className="font-bold text-gray-900 line-clamp-1 mb-2 group-hover:text-red-700 transition-colors">{p.name}</h4>
-                <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold text-red-700">₹{p.price}</span>
-                  <button className="p-2 bg-gray-100 rounded-full text-gray-600 hover:bg-red-600 hover:text-white transition-colors">
-                    <ShoppingCart size={16} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+
+        ))}
+
+      </div>
+
+    </div>
+
+  </section>
+)}
+
     </div>
   );
 };
