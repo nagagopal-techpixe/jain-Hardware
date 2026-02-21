@@ -137,7 +137,7 @@ export default function HomeView() {
       categories.map(cat => (
         <div
           key={cat.id}
-          onClick={() => setViewWithCategory("products", cat.name)}
+       onClick={() => setViewWithCategory("products", cat.public_id)}
           className="bg-white 
                      border border-gray-200 
                      rounded-xl 

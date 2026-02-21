@@ -1,6 +1,6 @@
 import { MapPin, Phone, Wrench } from "lucide-react";
 import { useCategories } from "../../data/Categories.jsx"; // <-- use hook
-
+import logo from "../../assests/taj_mahal_jain_logo.png"
 const BRAND_COLOR = "bg-red-700";
 const BRAND_TEXT = "text-red-700";
 const BRAND_BORDER = "border-red-700";
@@ -17,10 +17,14 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4 text-white">
-              <div className={`w-8 h-8 ${BRAND_COLOR} rounded flex items-center justify-center`}>
-                <Wrench size={18} />
-              </div>
-              <span className="text-xl font-bold">JAIN HARDWARE</span>
+             <div className="w-14 h-14 flex items-center justify-center">
+  <img
+    src={logo}
+    alt="Logo"
+    className="w-14 h-14 object-contain"
+  />
+</div>
+              <span className="text-xl font-bold">taj mahal jain</span>
             </div>
 
             <p className="text-sm text-gray-400 mb-6">

@@ -11,7 +11,7 @@ import CheckoutView from './pages/CheckoutView';
 import ToastContainer from './components/ui/ToastContainer';
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-
+import ContactPage from "./pages/ContactPage";
 
 
 const AppContent = () => {
@@ -28,6 +28,7 @@ case "register": return <Register />;
       case 'cart': return <CartView />;
       case 'checkout': return <CheckoutView />;
       case 'dashboard': return <DashboardView />;
+      case 'contact': return <ContactPage />;
       default: return <HomeView />;
     }
   };

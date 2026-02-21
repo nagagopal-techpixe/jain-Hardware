@@ -1,10 +1,12 @@
 import { useStore } from "../context/StoreContext"; 
 import { useState } from "react";
-import { CreditCard, Truck } from "lucide-react";
 import Button from "../components/ui/Button";   
+import { CreditCard, Truck, Home, ShoppingCart } from "lucide-react";
+
+
 
 const CheckoutView = () => {
-  const { setView, cart, placeOrder,addToast, user } = useStore();
+  const { setView, cart, placeOrder,addToast, user,navigateToHome } = useStore();
   const [step, setStep] = useState(1);
 
 const handlePlaceOrder = async (e) => {
@@ -49,6 +51,25 @@ console.log(e.target.payment.value);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
+      {/* Breadcrumb Navigation */}
+<nav className="flex items-center text-sm text-gray-500 mb-6 gap-2">
+  <button
+    onClick={navigateToHome} // go to Home
+    className="flex items-center hover:text-gray-700"
+  >
+    <Home size={16} className="mr-1" /> Home
+  </button>
+  <span>/</span>
+  <button
+    onClick={() => setView("cart")} // go back to Cart
+    className="hover:text-gray-700"
+  >
+    Cart
+  </button>
+  <span>/</span>
+  <span className="text-gray-700">Checkout</span> {/* current page */}
+</nav>
+
       <h1 className="text-2xl font-bold mb-8">Checkout</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2">

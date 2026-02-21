@@ -21,7 +21,7 @@ export const addToCart = async (product_type_id, quantity = 1) => {
     return res.data;
   } catch (err) {
     console.error("addToCart error:", err.response?.data || err.message);
-    return { success: false, message: "Failed to add to cart" };
+    return { success: false, message: "please Login" };
   }
 };
 

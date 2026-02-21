@@ -20,7 +20,7 @@ const staticData = [
 
 export const fetchBanners = async () => {
   try {
-    const res = await fetch("http://127.0.0.1:8000/api/banner/");
+    const res = await fetch("https://jain.bteam11.com/api/banner/");
     const json = await res.json();
 
     if (!json?.success) return [];

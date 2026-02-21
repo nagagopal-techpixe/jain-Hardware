@@ -4,7 +4,7 @@ export let products = []; // initially empty
 // Fetch backend products and map to frontend format
 export const fetchProducts = async () => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/all-products/");
+    const response = await fetch("https://jain.bteam11.com/api/all-products/");
     const data = await response.json();
 //  console.log("Raw API Response Count:", data.length);
     // Map backend format → frontend format

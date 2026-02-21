@@ -1,11 +1,12 @@
 // data/Categories.jsx
 import { useState, useEffect } from "react";
-import axios from "axios";
+import API from "./api"; // import your centralized axios instance
 
+// Fallback static categories in case API fails
 export const staticCategories = [
   { id: 1, name: "Power Tools", image: "..." },
   { id: 2, name: "Aluminium Ladders", image: "..." },
-  // ...
+  // add more if needed
 ];
 
 export function useCategories() {
@@ -13,15 +14,14 @@ export function useCategories() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/api/category/")
+    // Use centralized API instance instead of raw axios
+    API.get("category/") // baseURL is already set in API
       .then(res => {
-        // setCategories(res.data);
-        setCategories(res.data.data || []); // extract the array inside 'data'
-
+        setCategories(res.data.data || staticCategories); // fallback if data missing
         setLoading(false);
       })
       .catch(err => {
-        console.error(err);
+        console.error("Failed to fetch categories:", err);
         setCategories(staticCategories); // fallback to static data
         setLoading(false);
       });

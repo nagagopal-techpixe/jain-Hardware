@@ -7,21 +7,67 @@ import { fetchUser } from "../data/userService";
 
 
 export const StoreProvider = ({ children }) => {
-  const [view, setView] = useState("home");
+  
+ const [view, setView] = useState(
+  localStorage.getItem("view") || "home"
+);
+
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState("All");
   const [cart, setCart] = useState([]);
+  const [authLoading, setAuthLoading] = useState(true); // ✅ ADD THIS
+
   const [user, setUser] = useState({ name: "Guest", isLoggedIn: false });
   const [toasts, setToasts] = useState([]);
   const [authRequiredView, setAuthRequiredView] = useState(null);
   const [orders, setOrders] = useState([]);
 
-  const setViewWithCategory = (newView, category = "All", subCategory = "All") => {
-    setSelectedCategory(category);
-    setSelectedSubCategory(subCategory);
-    setView(newView);
-  };
+
+  useEffect(() => {
+  localStorage.setItem("view", view);
+}, [view]);
+
+  const navigateToHome = () => {
+  setView("home");                   // go to homepage view
+  setSelectedCategory("All");        // reset filters
+  setSelectedSubCategory("All");
+  fetchProducts({ category: null, subCategory: null, page: 1 });
+};
+
+useEffect(() => {
+  const token = localStorage.getItem("access");
+
+  if (token) {
+    restoreUser();
+  } else {
+    setAuthLoading(false);
+  }
+}, []);
+const restoreUser = async () => {
+  try {
+    const res = await fetchUser();
+
+    if (res.success) {
+      setUser({ ...res.user, isLoggedIn: true });
+    } else {
+      setUser({ name: "Guest", isLoggedIn: false });
+    }
+
+  } catch (e) {
+    setUser({ name: "Guest", isLoggedIn: false });
+  } finally {
+    setAuthLoading(false); // ✅ important
+  }
+};
+
+
+
+const setViewWithCategory = (newView, categoryId = null) => {
+  setSelectedCategoryId(categoryId);
+  setView(newView);
+};
   // ---- PRODUCT STATE ----
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -49,6 +95,9 @@ const placeOrderHandler = async (shippingDetails, paymentMethod) => {
       quantity: item.quantity
     }))
   };
+// in your StoreContext.js
+
+
 
   try {
     const res = await placeOrder(orderPayload);
@@ -59,7 +108,8 @@ const placeOrderHandler = async (shippingDetails, paymentMethod) => {
       await fetchOrdersHandler(); // refresh order history
       return true;
     } else {
-      addToast(res.message || "Failed to place order", "error");
+     addToast(res.message || "Failed to place order", "error");
+
       return false;
     }
   } catch (err) {
@@ -99,7 +149,7 @@ const fetchOrdersHandler = async () => {
       setLoading(true);
 
       // Build API URL dynamically
-      const url = new URL("http://127.0.0.1:8000/api/all-products/");
+      const url = new URL("https://jain.bteam11.com/api/all-products/");
       url.searchParams.append("page", page);
       url.searchParams.append("page_size", pageSize);
       if (category) url.searchParams.append("category", category);
@@ -156,7 +206,7 @@ const fetchOrdersHandler = async () => {
     const cacheKey = `${currentCategory || "all"}-${next}`;
 
     if (next <= totalPages && !pageCache.current[cacheKey]) {
-      const url = new URL("http://127.0.0.1:8000/api/all-products/");
+      const url = new URL("https://jain.bteam11.com/api/all-products/");
       url.searchParams.append("page", next);
       url.searchParams.append("page_size", pageSize);
       if (currentCategory) url.searchParams.append("category", currentCategory);
@@ -204,11 +254,21 @@ const fetchOrdersHandler = async () => {
   };
 
   // ---- TOASTS ----
-  const addToast = (message, type = "success") => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, message, type }]);
-    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3000);
-  };
+const addToast = (message, type) => {
+  const finalType = type || "success"; // default only if not passed
+
+  const id = Date.now();
+
+  setToasts(prev => [
+    ...prev,
+    { id, message, type: finalType }
+  ]);
+
+  setTimeout(() => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }, 3000);
+};
+
 
   // ---- CART ----
 
@@ -244,18 +304,23 @@ const addToCartHandler = async (product, quantity = 1) => {
   try {
     const res = await addToCart(productTypeId, quantity);
 
-    if (res.success) {
-      await fetchCart();
-      addToast(`Added ${product.name} to cart`);
-    } else {
-      console.error("Add to cart error:", res);
-      addToast(res.message || "Failed to add item to cart", "error");
-    }
+  if (res.success) {
+  await fetchCart();
+  addToast(`Added ${product.name} to cart`);
+} else {
+  console.error("Add to cart error:", res);
+
+  addToast(
+    res.message || "Failed to add item to cart",
+    "error" // 👈 IMPORTANT
+  );
+}
+
   } catch (err) {
     console.error("Add to cart exception:", err.response?.data || err.message);
     addToast("Failed to add item to cart", "error");
   }
-};
+}; 
 
 const updateQuantityHandler = async (id, delta) => {
   // 1️⃣ Optimistically update local cart
@@ -295,6 +360,7 @@ const removeFromCartHandler = async (id) => {
   } catch (err) {
     console.error(err);
     addToast("Failed to remove item", "error");
+
   }
 };
 
@@ -317,25 +383,39 @@ useEffect(() => {
 
 // Dynamic login using fetchUser
 const login = async () => {
-  const res = await fetchUser(); // call backend to get current user
+  const res = await fetchUser();
+
   if (res.success) {
     setUser({ ...res.user, isLoggedIn: true });
     addToast(`Welcome back, ${res.user.name}!`);
-    fetchCart(); // optional: fetch cart after login
   } else {
     setUser({ name: "Guest", isLoggedIn: false });
     addToast("Please login", "error");
   }
 };
 
+
 // Logout
 const logout = () => {
+  // Remove tokens
   localStorage.removeItem("access");
   localStorage.removeItem("refresh");
+
+  // Reset user
   setUser({ name: "Guest", isLoggedIn: false });
-  setView("home");
+
+  // ✅ CLEAR CART
+  setCart([]);
+
+  // Optional: clear cached pages
+  pageCache.current = {};
+
+  // Go to login or home
+  setView("login"); // better UX than home
+
   addToast("Logged out successfully");
 };
+
 
 
   const navigateToProduct = (product) => {
@@ -364,8 +444,8 @@ const logout = () => {
     updateQuantity: updateQuantityHandler,
 
     login,
+    authLoading,
     logout,
-
     toasts,
     addToast,
 
@@ -381,13 +461,16 @@ const logout = () => {
     goToPage,
     selectedProduct,
     navigateToProduct,
+    
     currentCategory,
     selectedCategory,
     setSelectedCategory,
     setViewWithCategory,
      placeOrder: placeOrderHandler,
+       navigateToHome,
     orders,
     fetchOrders: fetchOrdersHandler,
+    selectedCategoryId
   }}
 >
   {children}

@@ -18,7 +18,7 @@ export default function CategoryProductsPage() {
     setLoading(true);
 
     const res = await fetch(
-      `http://127.0.0.1:8000/api/all-products/?category=${category}&page=${pageNumber}`
+      `https://jain.bteam11.com/api/all-products/?category=${category}&page=${pageNumber}`
     );
 
     const data = await res.json();
