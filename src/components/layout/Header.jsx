@@ -60,15 +60,27 @@ const [userMenuOpen, setUserMenuOpen] = useState(false);
     else setView("cart");
   };
 
-  const handleSearch = () => {
-    if (!searchInput) return;
+const handleSearch = () => {
+  const cleaned = searchInput.trim().toLowerCase();
+  if (!cleaned) return;
 
-    setViewWithCategory("products", searchInput);
+  console.log("Search Text:", cleaned);
+  console.log("Categories:", categories);
+
+  const matchedCategory = categories.find(cat =>
+    cat.name.toLowerCase().includes(cleaned)
+  );
+
+  console.log("Matched:", matchedCategory);
+
+  if (matchedCategory) {
+    setViewWithCategory("products", matchedCategory.public_id);
     setSearchInput("");
-    setShowSuggestions(false);
-    setShowMobileSuggestions(false);
-    setIsMobileMenuOpen(false);
-  };
+  } else {
+    console.log("No category matched!");
+    setView("products");
+  }
+};
 
   /* ---------------- Filter Suggestions ---------------- */
 
@@ -281,11 +293,20 @@ const [userMenuOpen, setUserMenuOpen] = useState(false);
                     {filteredSuggestions.map((item, i) => (
                       <li
                         key={i}
-                        onClick={() => {
-                          setViewWithCategory("products", item);
-                          setSearchInput("");
-                          setShowSuggestions(false);
-                        }}
+                     onClick={() => {
+  const matchedCategory = categories.find(cat =>
+    cat.name.toLowerCase() === item.toLowerCase()
+  );
+
+  if (matchedCategory) {
+    setViewWithCategory("products", matchedCategory.public_id);
+  } else {
+    setView("products");
+  }
+
+  setSearchInput("");
+  setShowSuggestions(false);
+}}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
                       >
                         {item}
@@ -417,12 +438,20 @@ const [userMenuOpen, setUserMenuOpen] = useState(false);
                     {filteredSuggestions.map((item, i) => (
                       <li
                         key={i}
-                        onClick={() => {
-                          setViewWithCategory("products", item);
-                          setSearchInput("");
-                          setShowMobileSuggestions(false);
-                          setIsMobileMenuOpen(false);
-                        }}
+                     onClick={() => {
+  const matchedCategory = categories.find(cat =>
+    cat.name.toLowerCase() === item.toLowerCase()
+  );
+
+  if (matchedCategory) {
+    setViewWithCategory("products", matchedCategory.public_id);
+  } else {
+    setView("products");
+  }
+
+  setSearchInput("");
+  setShowSuggestions(false);
+}}
                         className="px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
                       >
                         {item}

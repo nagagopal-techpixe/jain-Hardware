@@ -65,7 +65,14 @@ const restoreUser = async () => {
 
 
 const setViewWithCategory = (newView, categoryId = null) => {
-  setSelectedCategoryId(categoryId);
+  let cleanId = categoryId;
+
+  // 🔥 Remove duplicate category like electrical/electrical
+  if (typeof categoryId === "string" && categoryId.includes("/")) {
+    cleanId = categoryId.split("/")[0];
+  }
+
+  setSelectedCategoryId(cleanId);
   setView(newView);
 };
   // ---- PRODUCT STATE ----
