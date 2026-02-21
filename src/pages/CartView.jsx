@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { ShoppingCart, Trash2 } from "lucide-react";
 import Button from "../components/ui/Button";
 import { useStore } from "../context/StoreContext";
 
 const CartView = () => {
   const { cart = [], removeFromCart, updateQuantity, setView } = useStore();
-
+const [deletingId, setDeletingId] = useState(null);
   // ✅ subtotal from backend total_price
   const subtotal = cart.reduce(
     (acc, item) => acc + (item.total_price || 0),
@@ -49,9 +49,26 @@ const CartView = () => {
                 <div className="flex-1">
                   <div className="flex justify-between">
                     <h3 className="font-bold">{name}</h3>
-                    <button onClick={() => removeFromCart(item.id)}>
-                      <Trash2 size={18} />
-                    </button>
+        <button
+  disabled={deletingId === item.id}
+  onClick={async () => {
+    try {
+      setDeletingId(item.id);
+      await removeFromCart(item.id);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setDeletingId(null);
+    }
+  }}
+  className="text-gray-500 hover:text-red-600 disabled:opacity-50"
+>
+  {deletingId === item.id ? (
+    <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+  ) : (
+    <Trash2 size={18} />
+  )}
+</button>
                   </div>
 
                   <div className="flex justify-between items-center mt-3">

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { fetchOrders } from "../data/APIFunctionsforCart";
 
 const DashboardView = () => {
-  const { user, logout, login } = useStore(); // ✅ fixed
+  const { user, logout, login,setView  } = useStore(); // ✅ fixed
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null); // ✅ for popup
@@ -76,9 +76,12 @@ const DashboardView = () => {
                 My Orders
               </button>
 
-              <button className="w-full text-left px-4 py-3 text-gray-600 hover:bg-gray-50 rounded">
-                Saved Addresses
-              </button>
+             <button
+  onClick={() => setView("addresses")}
+  className="w-full text-left px-4 py-3 text-gray-600 hover:bg-gray-50 rounded"
+>
+  Saved Addresses
+</button>
 
               <button className="w-full text-left px-4 py-3 text-gray-600 hover:bg-gray-50 rounded">
                 Account Settings

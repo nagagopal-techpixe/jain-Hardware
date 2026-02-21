@@ -12,7 +12,7 @@ import ToastContainer from './components/ui/ToastContainer';
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ContactPage from "./pages/ContactPage";
-
+import AddressPage from "./pages/AddressPage"; 
 
 const AppContent = () => {
   const { view } = useStore();
@@ -22,6 +22,7 @@ const AppContent = () => {
       case "login": return <Login />;
 case "register": return <Register />;
 
+ case "addresses": return <AddressPage />;  
       case 'home': return <HomeView />;
       case 'products': return <ProductListView />;
       case 'product-detail': return <ProductDetailView />;

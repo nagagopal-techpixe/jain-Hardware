@@ -363,11 +363,17 @@ const updateQuantityHandler = async (id, delta) => {
 const removeFromCartHandler = async (id) => {
   try {
     const res = await deleteCartItem(id);
-    if (res.success) await fetchCart();
+
+    if (res.success) {
+      await fetchCart();
+      addToast("Item removed from cart", "success"); // ✅ Success toast
+    } else {
+      addToast("Failed to remove item", "error");
+    }
+
   } catch (err) {
     console.error(err);
     addToast("Failed to remove item", "error");
-
   }
 };
 
