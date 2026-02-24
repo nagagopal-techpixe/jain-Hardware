@@ -177,6 +177,7 @@ const CheckoutView = () => {
                       />
                       <div className="text-sm">
                         <p className="font-semibold">{addr.name}</p>
+                          <p>{addr.email}</p>
                         <p>{addr.address}</p>
                         <p>{addr.city}, {addr.state}</p>
                         <p>{addr.country} - {addr.zip_code}</p>

@@ -17,9 +17,7 @@ const ProductDetailView = () => {
   const [mainImage, setMainImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!product) setView("products");
-  }, [product]);
+ 
 console.log(product);
   useEffect(() => {
     if (product) {
@@ -30,7 +28,16 @@ console.log(product);
     }
   }, [product]);
 
-  if (!product) return null;
+if (!product) {
+  return (
+    <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex flex-col items-center gap-3">
+        <span className="animate-spin h-10 w-10 border-4 border-red-600 border-t-transparent rounded-full"></span>
+        <p className="text-gray-600 text-sm">Loading product...</p>
+      </div>
+    </div>
+  );
+}
 
   const handleAddToCart = async () => {
     if (!selectedType?.id) return;

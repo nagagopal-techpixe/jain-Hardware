@@ -12,44 +12,46 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300 pt-16 pb-8">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12 ">
           
           {/* Brand */}
-          <div>
-            <div className="flex items-center gap-2 mb-4 text-white">
-             <div className="w-14 h-14 flex items-center justify-center">
-  <img
-    src={logo}
-    alt="Logo"
-    className="w-14 h-14 object-contain"
-  />
+       <div>
+  <div className="flex items-center gap-1 mt-[-34px] text-white">
+    <img
+      src={logo}
+      alt="Logo"
+      className="h-34 w-34 object-cover -mb-2 -mx-20 " // fits nicely without stretching
+    />
+<div className="flex flex-col leading-tight">
+  <span className="text-sm font-bold">TAJ MAHAL</span>
+  <span className="text-lg font-bold">JAIN BUILDING MATERIALS CO.</span>
 </div>
-              <span className="text-xl font-bold">taj mahal jain</span>
-            </div>
+  </div>
 
-            <p className="text-sm text-gray-400 mb-6">
-              Providing premium quality hardware tools and industrial supplies since 1995.
-              Your trusted partner for construction and home improvement.
-            </p>
+  <p className="text-sm text-gray-400  -mt-6 mb-6">
+    Providing premium quality hardware tools and industrial supplies since 2020.
+    Your trusted partner for construction and home improvement.
+  </p>
 
-            <div className="flex gap-4">
-              {[1,2,3,4].map(i => (
-                <div
-                  key={i}
-                  className="w-8 h-8 rounded bg-gray-800 hover:bg-red-700 transition-colors cursor-pointer"
-                />
-              ))}
-            </div>
-          </div>
+  <div className="flex gap-4">
+    {[1, 2, 3, 4].map((i) => (
+      <div
+        key={i}
+        className="w-8 h-8 rounded bg-gray-800 hover:bg-red-700 transition-colors cursor-pointer"
+      />
+    ))}
+  </div>
+</div>
 
           {/* Quick Links */}
           <div>
             <h3 className="text-white font-bold mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
-              <li><button className="hover:text-red-500">About Us</button></li>
-              <li><button className="hover:text-red-500">Contact</button></li>
-              <li><button className="hover:text-red-500">Bulk Orders</button></li>
+              <li><button className="hover:text-red-500">Products</button></li>
+              <li><button className="hover:text-red-500">Shop by Category</button></li>
               <li><button className="hover:text-red-500">Terms & Conditions</button></li>
+              <li><button className="hover:text-red-500">Contact</button></li>
+
             </ul>
           </div>
 
@@ -77,17 +79,21 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
                 <MapPin className="text-red-600 mt-0.5 flex-shrink-0" size={16} />
-                <span>Plot No. 42, Industrial Area, Hyderabad, Telangana, 500037</span>
+                <span>Jain hardware and power tools
+
+Shuwaikh Industrial Area
+
+Khalifa Al Jassim Str. - Block 1 - Bld. 148, Kuwait</span>
               </li>
 
               <li className="flex items-center gap-3">
                 <Phone className="text-red-600 flex-shrink-0" size={16} />
-                <span>+91 40 2345 6789</span>
+                <span>+965 9926 1620</span>
               </li>
 
               <li className="flex items-center gap-3">
                 <div className="w-4 h-4 rounded-full bg-green-500 flex-shrink-0" />
-                <span>Open: Mon - Sat (9AM - 8PM)</span>
+                <span>Open Daily: 7:00 AM – 7:00 PM</span>
               </li>
             </ul>
           </div>

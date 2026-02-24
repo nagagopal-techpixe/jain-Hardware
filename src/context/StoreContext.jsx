@@ -461,8 +461,8 @@ const logout = () => {
     logout,
     toasts,
     addToast,
-
     products,
+      setSelectedProduct,
     loading,
     page,
     pageSize,

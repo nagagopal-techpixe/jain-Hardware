@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { SEARCH_SUGGESTIONS } from "../../data/SEARCH_SUGGESTIONS.js";
 import logo from "../../assests/taj_mahal_jain_logo.png"
+import { searchProductByName } from "../../data/productSearchService";
 import {
   Phone,
   MapPin,
@@ -29,7 +30,8 @@ const [userMenuOpen, setUserMenuOpen] = useState(false);
     user,
     login,
     logout,
-    setViewWithCategory
+    setViewWithCategory,
+     setSelectedProduct  ,
   } = useStore();
 
   /* ---------------- States ---------------- */
@@ -60,26 +62,29 @@ const [userMenuOpen, setUserMenuOpen] = useState(false);
     else setView("cart");
   };
 
-const handleSearch = () => {
-  const cleaned = searchInput.trim().toLowerCase();
+const handleSearch = async () => {
+  const cleaned = searchInput.trim();
   if (!cleaned) return;
 
-  console.log("Search Text:", cleaned);
-  console.log("Categories:", categories);
-
   const matchedCategory = categories.find(cat =>
-    cat.name.toLowerCase().includes(cleaned)
+    cat.name.toLowerCase().includes(cleaned.toLowerCase())
   );
-
-  console.log("Matched:", matchedCategory);
 
   if (matchedCategory) {
     setViewWithCategory("products", matchedCategory.public_id);
-    setSearchInput("");
   } else {
-    console.log("No category matched!");
-    setView("products");
+    // 🔥 Navigate immediately
+    setSelectedProduct(null);
+    setView("product-detail");
+
+    const results = await searchProductByName(cleaned);
+
+    if (results.length > 0) {
+      setSelectedProduct(results[0]);
+    }
   }
+
+  setSearchInput("");
 };
 
   /* ---------------- Filter Suggestions ---------------- */
@@ -99,12 +104,13 @@ const handleSearch = () => {
 
           <div className="flex gap-6 text-base font-medium ml-2">
             <span className="flex items-center gap-2">
-              <Phone size={16} /> +91 98765 43210
+              <Phone size={16} /> +965 9926 1620
             </span>
 
-            <span className="flex items-center gap-2">
-              <MapPin size={16} /> Industrial Estate, Hyderabad
-            </span>
+            <span className="flex items-center gap-2 text-base font-medium ml-2">
+  <MapPin size={16} />
+  Shuwaikh Industrial Area, Khalifa Al Jassim Str., Kuwait
+</span>
           </div>
 
           <div className="flex gap-6 text-base font-medium mr-2">
@@ -127,11 +133,11 @@ const handleSearch = () => {
               onClick={() => setView("home")}
               className="flex items-center gap-2 cursor-pointer min-w-[200px]"
             >
-      <div className="w-24 h-24 flex items-center justify-center">
+   <div className="w-40 h-40 flex items-center justify-center">
   <img
     src={logo}
     alt="Logo"
-    className="w-24 h-24 object-contain"
+    className="w-40 h-40 object-cover"
   />
 </div>
 
@@ -139,14 +145,12 @@ const handleSearch = () => {
 
 
               <div>
-                <h1 className="text-lg font-bold">Taj Mahal Jain</h1>
+                {/* <h1 className="text-lg font-bold">Taj Mahal Jain</h1> */}
                 {/* <p className="text-[10px] text-gray-500 tracking-widest">
                   HARDWARE
                 </p> */}
               </div>
             </div>
-
-            {/* ========== Mobile Toggle ========== */}
         {/* ========== Mobile Icons ========== */}
 <div className="md:hidden ml-auto flex items-center gap-2">
 
@@ -293,16 +297,27 @@ const handleSearch = () => {
                     {filteredSuggestions.map((item, i) => (
                       <li
                         key={i}
-                     onClick={() => {
+  onClick={async () => {
   const matchedCategory = categories.find(cat =>
     cat.name.toLowerCase() === item.toLowerCase()
   );
 
   if (matchedCategory) {
+    // Category clicked
     setViewWithCategory("products", matchedCategory.public_id);
-  } else {
-    setView("products");
+  } 
+ else {
+  // 🔥 Step 1: Navigate immediately
+  setSelectedProduct(null);
+  setView("product-detail");
+
+  // 🔥 Step 2: Fetch product
+  const results = await searchProductByName(item);
+
+  if (results.length > 0) {
+    setSelectedProduct(results[0]);
   }
+}
 
   setSearchInput("");
   setShowSuggestions(false);
@@ -434,29 +449,36 @@ const handleSearch = () => {
                 {/* Mobile Suggestions */}
                 {showMobileSuggestions && searchInput && (
                   <ul className="absolute w-full bg-white border shadow rounded mt-1 max-h-48 overflow-y-auto z-50">
+{filteredSuggestions.map((item, i) => (
+  <li
+    key={i}
+    onClick={async () => {
+      const matchedCategory = categories.find(cat =>
+        cat.name.toLowerCase() === item.toLowerCase()
+      );
 
-                    {filteredSuggestions.map((item, i) => (
-                      <li
-                        key={i}
-                     onClick={() => {
-  const matchedCategory = categories.find(cat =>
-    cat.name.toLowerCase() === item.toLowerCase()
-  );
+      if (matchedCategory) {
+        // Category click
+        setViewWithCategory("products", matchedCategory.public_id);
+      } else {
+        // Product click → Call API
+        const results = await searchProductByName(item);
 
-  if (matchedCategory) {
-    setViewWithCategory("products", matchedCategory.public_id);
-  } else {
-    setView("products");
-  }
+        if (results.length > 0) {
+          setSelectedProduct(results[0]);
+          setView("product-detail");
+        }
+      }
 
-  setSearchInput("");
-  setShowSuggestions(false);
-}}
-                        className="px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
-                      >
-                        {item}
-                      </li>
-                    ))}
+      setSearchInput("");
+      setShowMobileSuggestions(false);
+      setIsMobileMenuOpen(false);
+    }}
+    className="px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+  >
+    {item}
+  </li>
+))}
 
                   </ul>
                 )}

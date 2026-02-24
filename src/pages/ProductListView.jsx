@@ -4,7 +4,7 @@ import { useStore } from "../context/StoreContext";
 
 const ProductListView = () => {
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null); // ✅ default ALL
+  const [selectedCategory, setSelectedCategory] = useState(null); //  default ALL
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
   const [hasLoaded, setHasLoaded] = useState(false);
 const [allCategoryGrid, setAllCategoryGrid] = useState([]);
@@ -46,7 +46,7 @@ useEffect(() => {
   fetchAllCategoriesGrid();
 }, []);
 
-  // ✅ Handle category change from store
+  //  Handle category change from store
   useEffect(() => {
     if (cleanCategoryId && categories.length > 0) {
       setSelectedCategory(cleanCategoryId);
@@ -56,7 +56,7 @@ useEffect(() => {
     }
   }, [cleanCategoryId, categories.length]);
 
-  // ✅ Fetch categories
+  //  Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -73,7 +73,7 @@ useEffect(() => {
     fetchCategories();
   }, []);
 
-  // ✅ Fetch products
+  //  Fetch products
   useEffect(() => {
     if (!selectedCategory || !selectedSubCategory) return;
 
@@ -137,8 +137,7 @@ useEffect(() => {
   return (
     <div className="container mx-auto px-4 py-8">
 
-      {/* 🔹 BREADCRUMB */}
-{/* 🔹 BREADCRUMB */}
+{/*  BREADCRUMB */}
 <div className="flex items-center text-sm text-gray-500 mb-6 gap-2">
   
   {/* HOME */}
@@ -146,7 +145,7 @@ useEffect(() => {
   size={16}
   className="cursor-pointer hover:text-black"
   onClick={() => {
-    setView("home");   // 👈 THIS is correct for your project
+    setView("home");   //  THIS is correct for your project
   }}
 />
 
@@ -159,7 +158,7 @@ useEffect(() => {
     }`}
     onClick={() => {
       if (selectedCategory) {
-        setSelectedSubCategory(null); // 👈 go back to subcategory list
+        setSelectedSubCategory(null); //  go back to subcategory list
         setProducts([]);
       }
     }}
@@ -183,16 +182,14 @@ useEffect(() => {
     </>
   )}
 </div>
-
-      <div className="flex flex-col lg:flex-row gap-8">
-
-        {/* 🔹 SIDEBAR */}
+      <div className="flex flex-col lg:flex-row gap-8 ">
+        {/*  SIDEBAR */}
         <div className="w-full lg:w-64 bg-white rounded-2xl shadow-sm p-6">
           <h3 className="font-bold mb-4">All Categories</h3>
 
-          <ul className="space-y-2">
+          <ul className="space-y-1">
 
-            {/* ✅ DEFAULT ALL BUTTON */}
+            {/*  DEFAULT ALL BUTTON */}
             <li
               onClick={() => {
                 setSelectedCategory(null);
@@ -217,7 +214,7 @@ useEffect(() => {
                   setSelectedSubCategory(null);
                   setProducts([]);
                 }}
-                className={`cursor-pointer px-3 py-2 rounded-xl transition ${
+                className={`cursor-pointer px-3 py-2 rounded-xl  ${
                   selectedCategory === cat.public_id
                     ? "bg-red-600 text-white"
                     : "hover:bg-gray-100"
@@ -231,9 +228,7 @@ useEffect(() => {
 
         {/* 🔹 RIGHT SIDE */}
         <div className="flex-1">
-
-          {/* ✅ CATEGORY GRID (ALL SELECTED) */}
-      {/* ✅ CATEGORY GRID (ALL SELECTED) */}
+      {/*  CATEGORY GRID (ALL SELECTED) */}
 {!selectedCategory && (
   <>
     {gridLoading ? (
@@ -266,7 +261,7 @@ useEffect(() => {
     )}
   </>
 )}
-          {/* ✅ SUBCATEGORIES */}
+          {/*  SUBCATEGORIES */}
           {selectedCategory && !selectedSubCategory && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {subCategories.length === 0 ? (
@@ -297,7 +292,7 @@ useEffect(() => {
             </div>
           )}
 
-          {/* ✅ PRODUCTS */}
+          {/*  PRODUCTS */}
           {selectedSubCategory && (
             <>
               {loading || !hasLoaded ? (
