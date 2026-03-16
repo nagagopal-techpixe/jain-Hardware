@@ -82,11 +82,6 @@ const DashboardView = () => {
 >
   Saved Addresses
 </button>
-
-              <button className="w-full text-left px-4 py-3 text-gray-600 hover:bg-gray-50 rounded">
-                Account Settings
-              </button>
-
               <button
                 onClick={logout}
                 className="w-full text-left px-4 py-3 text-gray-600 hover:bg-gray-50 rounded flex items-center gap-2"

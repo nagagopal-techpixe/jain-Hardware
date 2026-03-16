@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { SEARCH_SUGGESTIONS } from "../../data/SEARCH_SUGGESTIONS.js";
 import logo from "../../assests/taj_mahal_jain_logo.png"
-import { searchProductByName } from "../../data/productSearchService";
 import {
   Phone,
   MapPin,
@@ -24,22 +23,25 @@ const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const {
     cart,
-      authLoading,
+    authLoading,
     view,
     setView,
     user,
     login,
     logout,
     setViewWithCategory,
-     setSelectedProduct  ,
+    setSelectedProduct,
+    setSelectedCategoryId, 
+    setSelectedSubCategory,
+    handleSearch, // ✅ from context
   } = useStore();
 
   /* ---------------- States ---------------- */
 
   const [searchInput, setSearchInput] = useState("");
 
-  const [showSuggestions, setShowSuggestions] = useState(false);        // Desktop
-  const [showMobileSuggestions, setShowMobileSuggestions] = useState(false); // Mobile
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showMobileSuggestions, setShowMobileSuggestions] = useState(false);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showMobileCategories, setShowMobileCategories] = useState(false);
@@ -53,39 +55,16 @@ const [userMenuOpen, setUserMenuOpen] = useState(false);
   const BRAND_COLOR = "bg-red-700";
   const BRAND_TEXT = "text-red-700";
 
-  /* ---------------- Handlers ---------------- */
+  /* ---------------- Search Trigger ---------------- */
 
-  const handleCartClick = () => {
-    const token = localStorage.getItem("access");
-
-    if (!token) setView("login");
-    else setView("cart");
+  const triggerSearch = (query = searchInput) => {
+    if (!query.trim()) return;
+    handleSearch(query);           // ✅ delegates to context
+    setSearchInput("");
+    setShowSuggestions(false);
+    setShowMobileSuggestions(false);
+    setIsMobileMenuOpen(false);
   };
-
-const handleSearch = async () => {
-  const cleaned = searchInput.trim();
-  if (!cleaned) return;
-
-  const matchedCategory = categories.find(cat =>
-    cat.name.toLowerCase().includes(cleaned.toLowerCase())
-  );
-
-  if (matchedCategory) {
-    setViewWithCategory("products", matchedCategory.public_id);
-  } else {
-    // 🔥 Navigate immediately
-    setSelectedProduct(null);
-    setView("product-detail");
-
-    const results = await searchProductByName(cleaned);
-
-    if (results.length > 0) {
-      setSelectedProduct(results[0]);
-    }
-  }
-
-  setSearchInput("");
-};
 
   /* ---------------- Filter Suggestions ---------------- */
 
@@ -108,9 +87,9 @@ const handleSearch = async () => {
             </span>
 
             <span className="flex items-center gap-2 text-base font-medium ml-2">
-  <MapPin size={16} />
-  Shuwaikh Industrial Area, Khalifa Al Jassim Str., Kuwait
-</span>
+              <MapPin size={16} />
+              Shuwaikh Industrial Area, Khalifa Al Jassim Str., Kuwait
+            </span>
           </div>
 
           <div className="flex gap-6 text-base font-medium mr-2">
@@ -133,49 +112,44 @@ const handleSearch = async () => {
               onClick={() => setView("home")}
               className="flex items-center gap-2 cursor-pointer min-w-[200px]"
             >
-   <div className="w-40 h-40 flex items-center justify-center">
-  <img
-    src={logo}
-    alt="Logo"
-    className="w-40 h-40 object-cover"
-  />
-</div>
-
-
-
-
-              <div>
-                {/* <h1 className="text-lg font-bold">Taj Mahal Jain</h1> */}
-                {/* <p className="text-[10px] text-gray-500 tracking-widest">
-                  HARDWARE
-                </p> */}
+              <div className="w-40 h-40 flex items-center justify-center">
+                <img
+                  src={logo}
+                  alt="Logo"
+                  className="w-40 h-40 object-cover"
+                />
               </div>
+              <div></div>
             </div>
-        {/* ========== Mobile Icons ========== */}
-<div className="md:hidden ml-auto flex items-center gap-2">
 
-  {/* Cart */}
-  <button
-    onClick={handleCartClick}
-    className="relative p-2 rounded-md border"
-  >
-    <ShoppingCart size={20} />
+            {/* ========== Mobile Icons ========== */}
+            <div className="md:hidden ml-auto flex items-center gap-2">
 
-    {cartCount > 0 && <Badge>{cartCount}</Badge>}
-  </button>
+              {/* Cart */}
+              <button
+                onClick={() => {
+                  const token = localStorage.getItem("access");
+                  if (!token) setView("login");
+                  else setView("cart");
+                }}
+                className="relative p-2 rounded-md border"
+              >
+                <ShoppingCart size={20} />
+                {cartCount > 0 && <Badge>{cartCount}</Badge>}
+              </button>
 
-  {/* Menu Toggle */}
-  <button
-    onClick={() => {
-      setIsMobileMenuOpen(!isMobileMenuOpen);
-      setShowMobileSuggestions(false);
-    }}
-    className="p-2 rounded-md border"
-  >
-    {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-  </button>
+              {/* Menu Toggle */}
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(!isMobileMenuOpen);
+                  setShowMobileSuggestions(false);
+                }}
+                className="p-2 rounded-md border"
+              >
+                {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              </button>
 
-</div>
+            </div>
 
 
             {/* ========== Desktop Menu ========== */}
@@ -226,7 +200,7 @@ const handleSearch = async () => {
                       <button
                         key={cat.id}
                         onClick={() =>
-                         setViewWithCategory("products", cat.public_id)
+                          setViewWithCategory("products", cat.public_id)
                         }
                         className="text-left text-sm text-gray-600 hover:text-red-700"
                       >
@@ -280,12 +254,15 @@ const handleSearch = async () => {
                   onBlur={() =>
                     setTimeout(() => setShowSuggestions(false), 200)
                   }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") triggerSearch();
+                  }}
                   className="w-full h-10 pl-4 pr-20 bg-gray-100 rounded text-sm"
                 />
 
                 <button
-                  onClick={handleSearch}
-                  className="absolute right-0 top-0 h-full px-5 bg-red-900  text-white text-sm rounded-r"
+                  onClick={() => triggerSearch()}
+                  className="absolute right-0 top-0 h-full px-5 bg-red-900 text-white text-sm rounded-r"
                 >
                   SEARCH
                 </button>
@@ -297,31 +274,7 @@ const handleSearch = async () => {
                     {filteredSuggestions.map((item, i) => (
                       <li
                         key={i}
-  onClick={async () => {
-  const matchedCategory = categories.find(cat =>
-    cat.name.toLowerCase() === item.toLowerCase()
-  );
-
-  if (matchedCategory) {
-    // Category clicked
-    setViewWithCategory("products", matchedCategory.public_id);
-  } 
- else {
-  // 🔥 Step 1: Navigate immediately
-  setSelectedProduct(null);
-  setView("product-detail");
-
-  // 🔥 Step 2: Fetch product
-  const results = await searchProductByName(item);
-
-  if (results.length > 0) {
-    setSelectedProduct(results[0]);
-  }
-}
-
-  setSearchInput("");
-  setShowSuggestions(false);
-}}
+                        onClick={() => triggerSearch(item)} // ✅ clean
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
                       >
                         {item}
@@ -333,70 +286,69 @@ const handleSearch = async () => {
 
               </div>
 
-            {/* User Menu */}
-<div className="relative">
+              {/* User Menu */}
+              <div className="relative">
 
-  {/* User Icon */}
-  <button
-    onClick={() => setUserMenuOpen(!userMenuOpen)}
-    className="p-2 hover:bg-gray-100 rounded-full"
-  >
-    <User size={22} />
-  </button>
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="p-2 hover:bg-gray-100 rounded-full"
+                >
+                  <User size={22} />
+                </button>
 
-  {/* Dropdown */}
-{userMenuOpen && !authLoading && (
+                {userMenuOpen && !authLoading && (
 
-    <div className="absolute right-0 mt-2 w-40 bg-white border shadow-lg rounded-md z-50">
+                  <div className="absolute right-0 mt-2 w-40 bg-white border shadow-lg rounded-md z-50">
 
-      {user.isLoggedIn ? (
-        <>
-          {/* Dashboard */}
-          <button
-            onClick={() => {
-              setView("dashboard");
-              setUserMenuOpen(false);
-            }}
-            className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-          >
-            Dashboard
-          </button>
+                    {user.isLoggedIn ? (
+                      <>
+                        <button
+                          onClick={() => {
+                            setView("dashboard");
+                            setUserMenuOpen(false);
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                        >
+                          Dashboard
+                        </button>
 
-          {/* Logout */}
-          <button
-            onClick={() => {
-              logout();
-              setUserMenuOpen(false);
-            }}
-            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
-          >
-            Logout
-          </button>
-        </>
-      ) : (
-       <button
-  onClick={() => {
-    setView("login");     // 👈 THIS is important
-    setUserMenuOpen(false);
-  }}
-  className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
->
-  Login
-</button>
+                        <button
+                          onClick={() => {
+                            logout();
+                            setUserMenuOpen(false);
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                        >
+                          Logout
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setView("login");
+                          setUserMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                      >
+                        Login
+                      </button>
+                    )}
 
-      )}
+                  </div>
+                )}
 
-    </div>
-  )}
+              </div>
 
-</div>
               {/* Cart */}
               <button
-                onClick={handleCartClick}
+                onClick={() => {
+                  const token = localStorage.getItem("access");
+                  if (!token) setView("login");
+                  else setView("cart");
+                }}
                 className="relative p-2 hover:bg-gray-100 rounded-full"
               >
                 <ShoppingCart size={22} />
-
                 {cartCount > 0 && <Badge>{cartCount}</Badge>}
               </button>
 
@@ -436,11 +388,14 @@ const handleSearch = async () => {
                   onBlur={() =>
                     setTimeout(() => setShowMobileSuggestions(false), 200)
                   }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") triggerSearch();
+                  }}
                   className="w-full p-2 border rounded text-sm"
                 />
 
                 <button
-                  onClick={handleSearch}
+                  onClick={() => triggerSearch()}
                   className="absolute right-1 top-1 bottom-1 px-3 bg-blue-900 text-white text-xs rounded"
                 >
                   Go
@@ -449,37 +404,15 @@ const handleSearch = async () => {
                 {/* Mobile Suggestions */}
                 {showMobileSuggestions && searchInput && (
                   <ul className="absolute w-full bg-white border shadow rounded mt-1 max-h-48 overflow-y-auto z-50">
-{filteredSuggestions.map((item, i) => (
-  <li
-    key={i}
-    onClick={async () => {
-      const matchedCategory = categories.find(cat =>
-        cat.name.toLowerCase() === item.toLowerCase()
-      );
-
-      if (matchedCategory) {
-        // Category click
-        setViewWithCategory("products", matchedCategory.public_id);
-      } else {
-        // Product click → Call API
-        const results = await searchProductByName(item);
-
-        if (results.length > 0) {
-          setSelectedProduct(results[0]);
-          setView("product-detail");
-        }
-      }
-
-      setSearchInput("");
-      setShowMobileSuggestions(false);
-      setIsMobileMenuOpen(false);
-    }}
-    className="px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
-  >
-    {item}
-  </li>
-))}
-
+                    {filteredSuggestions.map((item, i) => (
+                      <li
+                        key={i}
+                        onClick={() => triggerSearch(item)} // ✅ clean
+                        className="px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                      >
+                        {item}
+                      </li>
+                    ))}
                   </ul>
                 )}
 
@@ -534,7 +467,7 @@ const handleSearch = async () => {
                       <button
                         key={cat.id}
                         onClick={() => {
-                         setViewWithCategory("products", cat.public_id);
+                          setViewWithCategory("products", cat.public_id);
                           setIsMobileMenuOpen(false);
                           setShowMobileCategories(false);
                         }}
@@ -588,7 +521,7 @@ const handleSearch = async () => {
               ) : (
                 <button
                   onClick={() => {
-                  setView("login"); 
+                    setView("login"); 
                     setIsMobileMenuOpen(false);
                   }}
                   className={`py-3 px-2 text-left font-medium ${BRAND_TEXT}`}
